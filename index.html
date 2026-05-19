@@ -5,23 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>MATRIX OS - 全息指挥中枢</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', 'Orbitron', 'Share Tech Mono', system-ui;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Orbitron', 'Share Tech Mono', system-ui; }
         :root {
             --bg-deep: #010514;
             --bg-surface: rgba(6, 16, 32, 0.75);
             --primary-glow: #00f0ff;
-            --primary-dim: #0a8f9f;
             --border-aura: rgba(0, 240, 255, 0.6);
             --text-bright: #eef5ff;
             --text-dim: #8db3e0;
             --card-bg: rgba(4, 12, 24, 0.7);
-            --card-border: linear-gradient(135deg, var(--primary-glow), #00aaff);
             --danger-neon: #ff2a6d;
             --success-glow: #39ff14;
             --gradient-1: #0044ff;
@@ -29,7 +21,6 @@
             --glass-blur: 12px;
             --modal-bg: rgba(2, 10, 22, 0.96);
         }
-
         body.theme-light {
             --bg-deep: #eef2ff;
             --bg-surface: rgba(255, 255, 255, 0.75);
@@ -42,213 +33,48 @@
             --gradient-1: #3b82f6;
             --gradient-2: #00c6ff;
         }
-
-        body {
-            background-color: var(--bg-deep);
-            color: var(--text-bright);
-            font-size: 14px;
-            height: 100vh;
-            overflow: hidden;
-            transition: background 0.3s, color 0.2s;
-        }
-
-        .aurora-field {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -2;
-            background: radial-gradient(circle at 30% 40%, var(--gradient-1), var(--gradient-2));
-            opacity: 0.25;
-            filter: blur(70px);
-            transition: background 0.4s;
-        }
-        .grid-overlay {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(var(--border-aura) 0.5px, transparent 0.5px),
-                linear-gradient(90deg, var(--border-aura) 0.5px, transparent 0.5px);
-            background-size: 30px 30px;
-            opacity: 0.08;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #10161f; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: var(--primary-glow); border-radius: 10px; }
-
-        .glass-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 24px;
-            backdrop-filter: blur(var(--glass-blur));
-            background: var(--bg-surface);
-            border-bottom: 1px solid var(--border-aura);
-            z-index: 100;
-        }
+        body { background-color: var(--bg-deep); color: var(--text-bright); font-size: 14px; height: 100vh; overflow: hidden; transition: background 0.3s, color 0.2s; }
+        .aurora-field { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background: radial-gradient(circle at 30% 40%, var(--gradient-1), var(--gradient-2)); opacity: 0.25; filter: blur(70px); transition: background 0.4s; }
+        .grid-overlay { position: fixed; width: 100%; height: 100%; background-image: linear-gradient(var(--border-aura) 0.5px, transparent 0.5px), linear-gradient(90deg, var(--border-aura) 0.5px, transparent 0.5px); background-size: 30px 30px; opacity: 0.08; pointer-events: none; z-index: -1; }
+        ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: #10161f; } ::-webkit-scrollbar-thumb { background: var(--primary-glow); border-radius: 10px; }
+        .glass-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; backdrop-filter: blur(var(--glass-blur)); background: var(--bg-surface); border-bottom: 1px solid var(--border-aura); z-index: 100; }
         .logo-area { display: flex; gap: 20px; align-items: center; }
-        .neon-text {
-            font-size: 1.4rem;
-            font-weight: 800;
-            letter-spacing: 3px;
-            background: linear-gradient(135deg, #fff, var(--primary-glow));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 0 5px var(--primary-glow);
-        }
-        .hud-btn {
-            background: transparent;
-            border: 1px solid var(--border-aura);
-            color: var(--primary-glow);
-            padding: 6px 16px;
-            cursor: pointer;
-            border-radius: 20px;
-            transition: 0.2s;
-            font-weight: bold;
-            backdrop-filter: blur(4px);
-        }
-        .hud-btn:hover, .hud-btn.active {
-            background: var(--primary-glow);
-            color: #010514;
-            box-shadow: 0 0 12px var(--primary-glow);
-        }
+        .neon-text { font-size: 1.4rem; font-weight: 800; letter-spacing: 3px; background: linear-gradient(135deg, #fff, var(--primary-glow)); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 0 5px var(--primary-glow); }
+        .hud-btn { background: transparent; border: 1px solid var(--border-aura); color: var(--primary-glow); padding: 6px 16px; cursor: pointer; border-radius: 20px; transition: 0.2s; font-weight: bold; backdrop-filter: blur(4px); }
+        .hud-btn:hover, .hud-btn.active { background: var(--primary-glow); color: #010514; box-shadow: 0 0 12px var(--primary-glow); }
         .theme-picker { display: flex; gap: 8px; margin-left: 15px; }
         .theme-icon { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 1px solid var(--border-aura); transition: 0.2s; }
         .theme-icon.dark { background: #010514; box-shadow: 0 0 6px #00f0ff; }
         .theme-icon.light { background: #eef2ff; box-shadow: 0 0 6px #3b82f6; }
-
         .dashboard { display: flex; height: calc(100vh - 68px); overflow: hidden; }
-        .side-panel {
-            width: 260px;
-            backdrop-filter: blur(10px);
-            background: var(--bg-surface);
-            border-right: 1px solid var(--border-aura);
-            padding: 20px 12px;
-            overflow-y: auto;
-            transition: 0.3s;
-        }
+        .side-panel { width: 260px; backdrop-filter: blur(10px); background: var(--bg-surface); border-right: 1px solid var(--border-aura); padding: 20px 12px; overflow-y: auto; transition: 0.3s; }
         .right-panel { border-left: 1px solid var(--border-aura); width: 360px; }
         .hidden-left { transform: translateX(-100%); margin-left: -260px; }
         .hidden-right { transform: translateX(100%); margin-right: -360px; }
         .main-stage { flex: 1; padding: 20px; overflow-y: auto; }
-        .section-title {
-            font-size: 1.1rem;
-            border-left: 4px solid var(--primary-glow);
-            padding-left: 12px;
-            margin-bottom: 18px;
-            display: flex;
-            justify-content: space-between;
-        }
-
+        .section-title { font-size: 1.1rem; border-left: 4px solid var(--primary-glow); padding-left: 12px; margin-bottom: 18px; display: flex; justify-content: space-between; }
         .hierarchy-group { margin-bottom: 28px; }
-        .group-label {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            background: rgba(0,240,255,0.15);
-            display: inline-block;
-            padding: 4px 14px;
-            border-radius: 20px;
-            margin-bottom: 12px;
-            backdrop-filter: blur(4px);
-            border-left: 2px solid var(--primary-glow);
-        }
+        .group-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 3px; background: rgba(0,240,255,0.15); display: inline-block; padding: 4px 14px; border-radius: 20px; margin-bottom: 12px; backdrop-filter: blur(4px); border-left: 2px solid var(--primary-glow); }
         .staff-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 18px; }
-        .staff-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(8px);
-            border: 1px solid var(--border-aura);
-            border-radius: 20px;
-            padding: 16px;
-            cursor: pointer;
-            transition: all 0.25s;
-            background-image: linear-gradient(135deg, transparent 0%, rgba(0,240,255,0.05) 100%);
-        }
-        .staff-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary-glow);
-            box-shadow: 0 0 20px rgba(0,240,255,0.3);
-        }
+        .staff-card { background: var(--card-bg); backdrop-filter: blur(8px); border: 1px solid var(--border-aura); border-radius: 20px; padding: 16px; cursor: pointer; transition: all 0.25s; background-image: linear-gradient(135deg, transparent 0%, rgba(0,240,255,0.05) 100%); }
+        .staff-card:hover { transform: translateY(-5px); border-color: var(--primary-glow); box-shadow: 0 0 20px rgba(0,240,255,0.3); }
         .card-site { font-size: 0.65rem; color: var(--primary-glow); margin-bottom: 8px; display: flex; justify-content: space-between; }
         .staff-name { font-size: 1.2rem; font-weight: bold; display: flex; align-items: baseline; gap: 8px; margin: 8px 0; }
         .staff-role { font-size: 0.7rem; background: rgba(0,240,255,0.2); display: inline-block; padding: 2px 10px; border-radius: 14px; }
         .staff-meta { margin-top: 12px; font-size: 0.7rem; display: flex; justify-content: space-between; color: var(--text-dim); }
         .tg-link-mini { color: var(--success-glow); text-decoration: none; font-size: 0.7rem; }
-
-        .holo-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(12px);
-            z-index: 2000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-        }
-        .holo-dialog {
-            width: 550px;
-            max-width: 90%;
-            background: var(--modal-bg);
-            border: 1px solid var(--primary-glow);
-            border-radius: 32px;
-            padding: 28px;
-            box-shadow: 0 0 40px rgba(0,240,255,0.3), inset 0 0 20px rgba(0,240,255,0.05);
-            animation: floatIn 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .holo-dialog::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--primary-glow), transparent);
-            animation: scan 3s linear infinite;
-        }
+        .holo-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); z-index: 2000; display: none; justify-content: center; align-items: center; }
+        .holo-dialog { width: 550px; max-width: 90%; background: var(--modal-bg); border: 1px solid var(--primary-glow); border-radius: 32px; padding: 28px; box-shadow: 0 0 40px rgba(0,240,255,0.3), inset 0 0 20px rgba(0,240,255,0.05); animation: floatIn 0.3s ease; position: relative; overflow: hidden; }
+        .holo-dialog::before { content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--primary-glow), transparent); animation: scan 3s linear infinite; }
         @keyframes scan { 0% { left: -100%; } 100% { left: 100%; } }
         @keyframes floatIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
         .stat-label { font-size: 0.7rem; color: var(--text-dim); margin-bottom: 4px; }
-
         .stats-console { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 18px; margin-bottom: 28px; }
-        .stat-crystal {
-            background: var(--card-bg);
-            backdrop-filter: blur(8px);
-            border: 1px solid var(--border-aura);
-            border-radius: 24px;
-            padding: 16px;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.2s;
-        }
+        .stat-crystal { background: var(--card-bg); backdrop-filter: blur(8px); border: 1px solid var(--border-aura); border-radius: 24px; padding: 16px; text-align: center; cursor: pointer; transition: 0.2s; }
         .stat-crystal:hover { border-color: var(--primary-glow); transform: scale(1.02); box-shadow: 0 0 15px var(--primary-glow); }
         .stat-value { font-size: 2rem; font-weight: bold; color: var(--primary-glow); }
-
-        .tech-input, select {
-            background: #0a1022;
-            border: 1px solid var(--border-aura);
-            color: var(--text-bright);
-            padding: 8px;
-            border-radius: 12px;
-            width: 100%;
-        }
-        .tech-btn {
-            background: transparent;
-            border: 1px solid var(--primary-glow);
-            color: var(--primary-glow);
-            padding: 8px 14px;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
+        .tech-input, select { background: #0a1022; border: 1px solid var(--border-aura); color: var(--text-bright); padding: 8px; border-radius: 12px; width: 100%; }
+        .tech-btn { background: transparent; border: 1px solid var(--primary-glow); color: var(--primary-glow); padding: 8px 14px; border-radius: 30px; cursor: pointer; transition: 0.2s; }
         .tech-btn:hover { background: var(--primary-glow); color: #010514; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .setting-group { margin-bottom: 20px; border-bottom: 1px dashed var(--border-aura); padding-bottom: 16px; }
@@ -367,7 +193,7 @@
 
 <script>
     // ⚠️ 请替换为你的实际部署 URL（必须与 Apps Script 部署的地址完全一致）⚠️
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1O44oy8XIjg67aWT43TYmH1gguiKLBrKrR-zYqDlcfAClHl5u417RDt3YhpJjwdnz/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzgK-T0ae8cr9zjmhjegqLgTe4RlNy086tVd7iw_CdABYtXTJj7XvirvwpEtJ-XPL1O/exec";
 
     let globalEmployees = [];
     let currentRole = "Viewer";
@@ -392,7 +218,7 @@
         return "其他";
     }
 
-    // 主题管理（基于邮箱独立存储）
+    // 主题管理
     function loadUserTheme() {
         if (!currentUserEmail) return;
         const key = `theme_${currentUserEmail}`;
@@ -472,14 +298,12 @@
         }
     }
 
-    // TG 链接
     function makeTgLink(username, type) {
         if (!username) return "无";
         const clean = username.replace('@', '');
         return `<a href="tg://resolve?domain=${clean}" target="_blank" rel="noopener noreferrer" style="color:var(--primary-glow);" onclick="event.stopPropagation();">${type === 'work' ? '📡 工作TG' : '🔒 私人TG'}</a>`;
     }
 
-    // 弹窗
     function showEmployeeProfile(emp) {
         const modal = document.getElementById('holoModal');
         const content = document.getElementById('modalContent');
@@ -513,7 +337,6 @@
     function showDashView() { document.getElementById('staffViewArea').style.display = 'none'; document.getElementById('dashViewArea').style.display = 'block'; renderDashboard(); }
     function clearForm() { document.querySelectorAll('#editorForm input, #editorForm select, #editorForm textarea').forEach(i=>i.value=''); }
     
-    // 登录
     async function verifyLogin() {
         const email = document.getElementById('loginEmail').value.trim();
         if(!email) return alert("输入邮箱");
@@ -522,6 +345,7 @@
         btn.disabled = true;
         try {
             const res = await fetch(`${SCRIPT_URL}?action=verifyEmail&email=${encodeURIComponent(email)}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data = await res.json();
             if(data.allowed) {
                 currentRole = data.role || "Viewer";
@@ -621,7 +445,6 @@
         document.getElementById('f_notes').value = emp['备注']||'';
     }
     
-    // 仪表盘
     function getTenureDays(hireDateStr) {
         if(!hireDateStr) return null;
         const hire = new Date(hireDateStr);
@@ -688,8 +511,7 @@
         filtered.forEach(emp => { container.appendChild(createStaffCard(emp)); });
     }
     
-    // 写入二次确认
-    function confirmWrite() {
+    async function confirmWrite() {
         if(currentRole !== 'Admin') return alert("无写入权限");
         if(!document.getElementById('f_id').value.trim() || !document.getElementById('f_name').value.trim()) return alert("工号姓名必填");
         if(confirm("⚠️ 确认穿透云端写入员工数据？")) {
@@ -702,13 +524,15 @@
                 '国籍': document.getElementById('f_nation').value, '等级': document.getElementById('f_level').value,
                 '备注': document.getElementById('f_notes').value
             };
-            fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers: { 'Content-Type': 'application/json' }, body:JSON.stringify(payload) })
-                .then(()=>{ alert("写入指令已发送"); setTimeout(loadEmployees,1200); })
-                .catch(e=>alert("失败:"+e));
+            try {
+                const response = await fetch(SCRIPT_URL, { method:'POST', headers: { 'Content-Type': 'application/json' }, body:JSON.stringify(payload) });
+                const result = await response.json();
+                if(result.status === 'success') { alert("写入成功"); loadEmployees(); }
+                else alert("写入失败: " + result.msg);
+            } catch(e) { alert("网络错误: " + e.message); }
         }
     }
     
-    // 站点管理和白名单管理（需要调用后端）
     async function deleteSite(siteName) {
         if(!confirm(`确定删除站点「${siteName}」及其所有员工吗？此操作不可逆！`)) return;
         const resp = await fetch(`${SCRIPT_URL}?action=deleteSite&site=${encodeURIComponent(siteName)}`);
@@ -774,7 +598,6 @@
         document.getElementById('addViewerBtn').onclick = () => { const email = document.getElementById('newViewerEmail').value; if(email) addToWhitelist(email, 'Viewer'); };
     }
     
-    // 创建弹窗容器
     const modalDiv = document.createElement('div');
     modalDiv.id = 'holoModal';
     modalDiv.className = 'holo-overlay';
