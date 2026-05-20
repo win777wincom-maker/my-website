@@ -544,13 +544,13 @@
         renderHierarchyEngine();
     }
 
-   /* ====== 数据分析可视化仪表盘综合计算引擎（已新增A/B班统计） ====== */
+   /* ====== 数据分析可视化仪表盘综合计算引擎（已修复引号截断隐患） ====== */
 function renderMetricsDashboard() {
     const now = new Date("2026-05-20"); // 设定运行沙盒参照基准时空
     let metrics = {
         total: 0, 主管: 0, 助理: 0, 助手: 0, 客服组长: 0, 客服: 0, 出款组长: 0, 出款: 0,
         newbie: 0, mid1: 0, mid2: 0, senior: 0,
-        shiftA: 0, shiftB: 0 // 【新增】A/B班计数器
+        shiftA: 0, shiftB: 0 // A/B班计数器
     };
     
     globalEmployees.forEach(e => {
@@ -558,7 +558,7 @@ function renderMetricsDashboard() {
         const g = getRoleGroup(e['岗位']);
         if (metrics[g] !== undefined) metrics[g]++;
         
-        // 【新增】扫描员工班次
+        // 扫描员工班次
         if (e['班次'] === 'A班') metrics.shiftA++;
         if (e['班次'] === 'B班') metrics.shiftB++;
         
@@ -577,15 +577,15 @@ function renderMetricsDashboard() {
     
     const cards = [
         { label: "🌌 总指挥矩阵人员", val: metrics.total, criteria: { type: "all" } },
-        { label: "☀️ A班总人数", val: metrics.shiftA, criteria: { type: "shift", value: "A班" } }, // 【新增】A班卡片
-        { label: "🌙 B班总人数", val: metrics.shiftB, criteria: { type: "shift", value: "B班" } }, // 【新增】B班卡片
+        { label: "☀️ A班总人数", val: metrics.shiftA, criteria: { type: "shift", value: "A班" } }, 
+        { label: "🌙 B班总人数", val: metrics.shiftB, criteria: { type: "shift", value: "B班" } }, 
         { label: "👑 主管", val: metrics.主管, criteria: { type: "role", value: "主管" } },
         { label: "📋 助理", val: metrics.助理, criteria: { type: "role", value: "助理" } },
         { label: "🛠️ 助手", val: metrics.助手, criteria: { type: "role", value: "助手" } },
         { label: "🎧 客服组长", val: metrics.客服组长, criteria: { type: "role", value: "客服组长" } },
         { label: "💬 客服专员", val: metrics.客服, criteria: { type: "role", value: "客服" } },
         { label: "💰 出款组长", val: metrics.出款组长, criteria: { type: "role", value: "出款组长" } },
-        { label: "💸 出款审核", val: metrics.出款, criteria: { type: "出款" } },
+        { label: "💸 出款审核", val: metrics.出款, criteria: { type: "role", value: "出款" } },
         { label: "🌱 3月内新能体", val: metrics.newbie, criteria: { type: "seniority", range: "newbie" } },
         { label: "🌗 6月-1年潜能体", val: metrics.mid1, criteria: { type: "seniority", range: "mid1" } },
         { label: "🌟 1-2年主力矩阵", val: metrics.mid2, criteria: { type: "seniority", range: "mid2" } },
@@ -593,16 +593,26 @@ function renderMetricsDashboard() {
     ];
     
     const container = document.getElementById('statisticsDashboard');
+    // 【核心修复】外层改用单引号包裹 onclick 属性，内部直接传递原生 JSON 字符串，彻底绝除截断报错
     container.innerHTML = cards.map(c => `
-        <div class="stat-hud-card" onclick="applyDashboardMetricFilter(${JSON.stringify(c.criteria).replace(/"/g, '&quot;')})">
+        <div class="stat-hud-card" onclick='applyDashboardMetricFilter(${JSON.stringify(c.criteria)})'>
             <div class="stat-hud-num">${c.val}</div>
             <div class="stat-hud-label">${c.label}</div>
         </div>
     `).join('');
 }
 
-/* ====== 核心数据架构多模式渲染引擎（已适配A/B班卡片点击下钻） ====== */
+/* ====== 核心数据架构多模式渲染引擎（已修复多重条件过滤冲突） ====== */
 function renderHierarchyEngine() {
+    // 【核心修复】如果看板点击的是班次下钻，直接将其智能同步给全局班次过滤状态，防止条件死锁导致名单变空
+    if (currentFilter.statCriteria && currentFilter.statCriteria.type === 'shift') {
+        currentFilter.shift = currentFilter.statCriteria.value;
+    }
+    // 如果点击的是总览，则释放班次状态限制
+    if (currentFilter.statCriteria && currentFilter.statCriteria.type === 'all') {
+        currentFilter.shift = null;
+    }
+
     let pool = [...globalEmployees];
     const now = new Date("2026-05-20");
     
@@ -621,8 +631,6 @@ function renderHierarchyEngine() {
         const sc = currentFilter.statCriteria;
         if(sc.type === 'role') {
             pool = pool.filter(e => getRoleGroup(e['岗位']) === sc.value);
-        } else if(sc.type === 'shift') { // 【新增】支持点击看板卡片时按班次下钻过滤
-            pool = pool.filter(e => e['班次'] === sc.value);
         } else if(sc.type === 'seniority') {
             pool = pool.filter(e => {
                 if(!e['入职日期']) return false;
@@ -670,6 +678,7 @@ function renderHierarchyEngine() {
     if(currentFilter.shift) stateTitle += ` · [${currentFilter.shift}]`;
     if(currentFilter.statCriteria) {
         if(currentFilter.statCriteria.type === 'shift') stateTitle += ` · [看板下钻: ${currentFilter.statCriteria.value}]`;
+        else if(currentFilter.statCriteria.type === 'all') stateTitle += '';
         else stateTitle += ` · [数据图表下钻模式]`;
     }
     document.getElementById('currentViewTitle').innerHTML = stateTitle;
