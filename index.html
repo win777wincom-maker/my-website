@@ -593,14 +593,23 @@ function renderMetricsDashboard() {
     ];
     
     const container = document.getElementById('statisticsDashboard');
-    // 【核心修复】外层改用单引号包裹 onclick 属性，内部直接传递原生 JSON 字符串，彻底绝除截断报错
-    container.innerHTML = cards.map(c => `
-        <div class="stat-hud-card" onclick='applyDashboardMetricFilter(${JSON.stringify(c.criteria)})'>
-            <div class="stat-hud-num">${c.val}</div>
-            <div class="stat-hud-label">${c.label}</div>
-        </div>
-    `).join('');
-}
+ // 修正后的代码段
+const container = document.getElementById('statisticsDashboard');
+container.innerHTML = ''; // 清空旧内容
+
+cards.forEach(c => {
+    const card = document.createElement('div');
+    card.className = 'stat-hud-card';
+    // 将对象转为 JSON 字符串并进行 URI 编码，避免引号冲突
+    const criteriaStr = encodeURIComponent(JSON.stringify(c.criteria));
+    card.setAttribute('onclick', `applyDashboardMetricFilter(JSON.parse(decodeURIComponent('${criteriaStr}')) )`);
+    
+    card.innerHTML = `
+        <div class="stat-hud-num">${c.val}</div>
+        <div class="stat-hud-label">${c.label}</div>
+    `;
+    container.appendChild(card);
+});
 
 /* ====== 核心数据架构多模式渲染引擎（已修复多重条件过滤冲突） ====== */
 function renderHierarchyEngine() {
