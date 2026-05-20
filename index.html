@@ -5,259 +5,225 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>MATRIX OS - 全息指挥中枢</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Orbitron', 'Share Tech Mono', system-ui; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Orbitron', system-ui; }
         :root {
             --bg-deep: #010514;
-            --bg-surface: rgba(6, 16, 32, 0.75);
+            --bg-surface: rgba(6, 16, 32, 0.65);
             --primary-glow: #00f0ff;
             --border-aura: rgba(0, 240, 255, 0.6);
             --text-bright: #eef5ff;
             --text-dim: #8db3e0;
-            --card-bg: rgba(4, 12, 24, 0.7);
+            --card-bg: rgba(4, 12, 24, 0.5);
             --danger-neon: #ff2a6d;
             --success-glow: #39ff14;
-            --gradient-1: #002288;
-            --gradient-2: #00f2ff;
-            --glass-blur: 12px;
-            --modal-bg: rgba(2, 10, 22, 0.96);
+            --gradient-1: #001155;
+            --gradient-2: #0088ff;
+            --glass-blur: 16px;
+            --modal-bg: rgba(2, 10, 22, 0.90);
             --title-color: #00f0ff;
         }
         body.theme-light {
-            --bg-deep: #eef2ff;
-            --bg-surface: rgba(255, 255, 255, 0.85);
+            --bg-deep: #f0f4f8;
+            --bg-surface: rgba(255, 255, 255, 0.65);
             --primary-glow: #0055ff;
             --border-aura: #3b82f6;
-            --text-bright: #05051a;
-            --text-dim: #4a5d80;
-            --card-bg: rgba(240, 245, 255, 0.9);
-            --modal-bg: rgba(240, 245, 255, 0.98);
-            --gradient-1: #82b4ff;
-            --gradient-2: #d4f0ff;
+            --text-bright: #0f172a;
+            --text-dim: #475569;
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --modal-bg: rgba(248, 250, 252, 0.95);
+            --gradient-1: #93c5fd;
+            --gradient-2: #e0f2fe;
             --title-color: #0055ff;
         }
-        
         body { background-color: var(--bg-deep); color: var(--text-bright); font-size: 14px; height: 100vh; overflow: hidden; transition: background 0.4s, color 0.4s; }
         
-        /* ⑧ 纯净高级动态极光背景 (去掉网格) */
+        /* 动态极光渐变背景，去掉了网格 */
         .aurora-field { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; 
-            background: linear-gradient(120deg, var(--bg-deep) 0%, var(--gradient-1) 50%, var(--gradient-2) 100%); 
+            background: linear-gradient(125deg, var(--bg-deep) 0%, var(--gradient-1) 40%, var(--gradient-2) 60%, var(--bg-deep) 100%); 
             background-size: 300% 300%;
             animation: aurora-flow 12s ease-in-out infinite alternate;
-            opacity: 0.9; filter: blur(30px); transition: background 0.4s;
+            filter: blur(50px); opacity: 0.85; transition: background 0.4s; 
         }
         @keyframes aurora-flow { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
 
-        /* ⑤ 高级极光动态实线边框 */
+        /* 高级极光动态边框 */
         .dynamic-border {
-            position: relative;
-            background-clip: padding-box;
-            border: 1px solid transparent;
+            border: 1px solid var(--border-aura);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2), 0 0 8px rgba(0,0,0,0.3);
+            animation: borderPulse 3s infinite alternate;
         }
-        .dynamic-border::before {
-            content: ''; position: absolute; top: -1px; left: -1px; right: -1px; bottom: -1px;
-            z-index: -1; border-radius: inherit;
-            background: linear-gradient(45deg, var(--primary-glow), transparent, var(--border-aura), transparent);
-            background-size: 200% 200%;
-            animation: borderAura 4s linear infinite;
-            pointer-events: none;
+        @keyframes borderPulse {
+            0% { border-color: var(--border-aura); box-shadow: 0 0 5px rgba(0, 240, 255, 0.05); }
+            100% { border-color: var(--primary-glow); box-shadow: 0 0 15px rgba(0, 240, 255, 0.3); }
         }
-        @keyframes borderAura { 0% { background-position: 0% 0%; } 100% { background-position: 200% 200%; } }
 
-        ::-webkit-scrollbar { width: 6px; } 
-        ::-webkit-scrollbar-track { background: transparent; } 
-        ::-webkit-scrollbar-thumb { background: var(--primary-glow); border-radius: 10px; }
-
-        .glass-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; backdrop-filter: blur(var(--glass-blur)); background: var(--bg-surface); z-index: 100; box-shadow: 0 2px 15px rgba(0,0,0,0.3);}
+        ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--primary-glow); border-radius: 10px; }
         
+        .glass-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; backdrop-filter: blur(var(--glass-blur)); background: var(--bg-surface); z-index: 100; border-bottom: 1px solid var(--primary-glow);}
         .logo-area { display: flex; gap: 20px; align-items: center; }
-        .neon-text { font-size: 1.5rem; font-weight: 900; letter-spacing: 3px; color: var(--title-color); text-shadow: 0 0 12px var(--title-color); transition: color 0.3s, text-shadow 0.3s; }
+        .neon-text { font-size: 1.4rem; font-weight: 800; letter-spacing: 2px; color: var(--title-color); text-shadow: 0 0 10px var(--title-color); transition: color 0.3s; }
         
-        .hud-btn { background: var(--bg-surface); border: 1px solid var(--border-aura); color: var(--primary-glow); padding: 8px 18px; cursor: pointer; border-radius: 20px; transition: all 0.3s ease; font-weight: bold; backdrop-filter: blur(4px); display: flex; align-items: center; gap: 6px;}
-        .hud-btn:hover, .hud-btn.active { background: var(--primary-glow); color: var(--bg-deep); box-shadow: 0 0 15px var(--primary-glow); border-color: transparent;}
+        .hud-btn { background: var(--bg-surface); border: 1px solid var(--border-aura); color: var(--primary-glow); padding: 6px 16px; cursor: pointer; border-radius: 20px; transition: 0.3s; font-weight: bold; backdrop-filter: blur(4px); display: inline-flex; align-items: center; justify-content: center; gap: 6px;}
+        .hud-btn:hover, .hud-btn.active { background: var(--primary-glow); color: #fff; box-shadow: 0 0 15px var(--primary-glow); border-color: transparent;}
         
-        .theme-picker { display: flex; gap: 8px; margin-left: 10px; }
+        .theme-picker { display: flex; gap: 8px; margin-left: 15px; }
         .theme-icon { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 1px solid var(--border-aura); transition: 0.2s; }
         .theme-icon.dark { background: #010514; box-shadow: 0 0 6px #00f0ff; }
         .theme-icon.light { background: #eef2ff; box-shadow: 0 0 6px #3b82f6; }
         
-        /* ⑦ 搜索框优化 */
-        .search-box { background: var(--card-bg); border: 1px solid var(--border-aura); color: var(--text-bright); padding: 8px 16px; border-radius: 20px; outline: none; width: 220px; transition: 0.3s; font-weight: bold;}
-        .search-box::placeholder { color: var(--text-dim); }
-        .search-box:focus { border-color: var(--primary-glow); box-shadow: 0 0 15px var(--primary-glow); width: 260px;}
+        .search-box { background: rgba(0,0,0,0.1); border: 1px solid var(--border-aura); color: var(--text-bright); padding: 8px 16px; border-radius: 20px; outline: none; width: 220px; transition: 0.3s; backdrop-filter: blur(4px);}
+        .search-box:focus { border-color: var(--primary-glow); box-shadow: 0 0 12px var(--primary-glow); }
 
-        .dashboard { display: flex; height: calc(100vh - 72px); overflow: hidden; position: relative;}
-        .side-panel { width: 260px; backdrop-filter: blur(10px); background: var(--bg-surface); padding: 20px 12px; overflow-y: auto; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), margin 0.4s; z-index: 10;}
-        .right-panel { width: 420px; }
+        .dashboard-layout { display: flex; height: calc(100vh - 65px); overflow: hidden; position: relative;}
+        .side-panel { width: 260px; backdrop-filter: blur(var(--glass-blur)); background: var(--bg-surface); padding: 20px 12px; overflow-y: auto; transition: transform 0.3s, margin 0.3s; flex-shrink:0; }
+        .right-panel { width: 400px; }
         .hidden-left { transform: translateX(-100%); margin-left: -260px; }
-        .hidden-right { transform: translateX(100%); margin-right: -420px; }
+        .hidden-right { transform: translateX(100%); margin-right: -400px; }
+        .main-stage { flex: 1; padding: 20px; overflow-y: auto; position: relative;}
         
-        .main-stage { flex: 1; padding: 25px; overflow-y: auto; position: relative; z-index: 5;}
+        .section-title { font-size: 1.1rem; border-left: 4px solid var(--primary-glow); padding-left: 12px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; color: var(--text-bright); font-weight:bold;}
         
-        .section-title { font-size: 1.2rem; border-left: 4px solid var(--primary-glow); padding-left: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; color: var(--text-bright); font-weight: bold;}
+        /* 视图容器: Grid, List, Tree */
+        .staff-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+        .staff-list { display: flex; flex-direction: column; gap: 8px; }
+        .staff-tree { display: flex; flex-wrap: wrap; gap: 12px; padding-left: 20px; border-left: 2px dashed var(--border-aura); }
         
-        /* 视图容器 */
-        .staff-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
-        .staff-list { display: flex; flex-direction: column; gap: 12px; }
-        .staff-tree { padding-left: 20px; border-left: 2px dashed var(--border-aura); display: flex; flex-direction: column; gap: 12px; }
+        .staff-card { background: var(--card-bg); backdrop-filter: blur(8px); border-radius: 12px; padding: 16px; cursor: pointer; transition: all 0.3s; overflow: hidden; }
+        .staff-card:hover { transform: translateY(-4px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); border-color: var(--primary-glow); }
         
-        .staff-card { background: var(--card-bg); backdrop-filter: blur(10px); border-radius: 12px; padding: 18px; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; color: var(--text-bright);}
-        .staff-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 8px 25px rgba(0,0,0,0.5); z-index: 2;}
-        
-        /* 列表与树状模式 */
         .staff-card.list-mode { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; }
-        .staff-card.tree-mode { display: inline-block; width: fit-content; padding: 8px 16px; border-radius: 8px; margin-left: 20px; position: relative;}
-        .staff-card.tree-mode::before { content: ''; position: absolute; left: -22px; top: 50%; width: 20px; height: 2px; background: dashed var(--border-aura); }
+        .staff-card.list-mode .staff-meta { margin: 0; }
+        .staff-card.tree-mode { padding: 8px 16px; min-width: 150px; text-align:center; }
+        .staff-card.tree-mode .staff-meta { display: none; }
 
-        .card-site { font-size: 0.7rem; color: var(--primary-glow); margin-bottom: 10px; display: flex; justify-content: space-between; font-weight: bold; text-transform: uppercase;}
-        .staff-name { font-size: 1.3rem; font-weight: 900; display: flex; align-items: baseline; gap: 10px; margin: 10px 0; }
-        .staff-role { font-size: 0.75rem; background: rgba(0,240,255,0.15); display: inline-block; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--primary-glow); font-weight: bold;}
-        .staff-meta { margin-top: 15px; font-size: 0.8rem; display: flex; justify-content: space-between; color: var(--text-dim); }
+        .card-site { font-size: 0.7rem; color: var(--primary-glow); margin-bottom: 8px; display: flex; justify-content: space-between; font-weight:bold;}
+        .staff-name { font-size: 1.25rem; font-weight: bold; display: flex; align-items: baseline; gap: 8px; margin: 8px 0; color: var(--text-bright); }
+        .staff-role { font-size: 0.75rem; background: rgba(0,240,255,0.15); display: inline-block; padding: 4px 12px; border-radius: 14px; color: var(--text-bright); border: 1px solid var(--border-aura);}
+        .staff-meta { margin-top: 12px; font-size: 0.75rem; display: flex; justify-content: space-between; color: var(--text-dim); }
         
-        /* ⑥ 站点与班次展开 */
         .site-menu-item { display: flex; flex-direction: column; margin-bottom: 10px; }
-        .site-shifts { display: none; padding-left: 20px; margin-top: 8px; gap: 8px; flex-direction: column; border-left: 2px solid rgba(0,240,255,0.3); margin-left: 10px;}
-        .site-shifts.active { display: flex; animation: slideDown 0.3s ease;}
-        @keyframes slideDown { from{opacity:0; transform:translateY(-10px);} to{opacity:1; transform:translateY(0);} }
-        .shift-btn { font-size: 0.85rem; background: transparent; border: none; color: var(--text-bright); padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: 0.2s; text-align: left; position: relative;}
-        .shift-btn:hover { background: rgba(0,240,255,0.2); color: var(--primary-glow); padding-left: 15px;}
-        .shift-btn::before { content: '▹'; position: absolute; left: 0; opacity: 0; transition: 0.2s;}
-        .shift-btn:hover::before { opacity: 1; left: 4px; }
+        .site-shifts { display: none; padding-left: 20px; margin-top: 8px; gap: 6px; flex-direction: column; }
+        .site-shifts.active { display: flex; }
+        .shift-btn { font-size: 0.85rem; background: transparent; border: 1px dashed var(--border-aura); color: var(--text-bright); padding: 6px; border-radius: 6px; cursor: pointer; transition: 0.2s; text-align: left; }
+        .shift-btn:hover { background: var(--primary-glow); color: #fff; border-style: solid; }
 
-        .holo-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); z-index: 2000; display: none; justify-content: center; align-items: center; }
-        .holo-dialog { width: 650px; max-width: 95%; background: var(--modal-bg); border-radius: 16px; padding: 30px; box-shadow: 0 0 50px rgba(0,0,0,0.8); animation: floatIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); color: var(--text-bright);}
-        @keyframes floatIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .holo-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 2000; display: none; justify-content: center; align-items: center; }
+        .holo-dialog { width: 650px; max-width: 95%; background: var(--modal-bg); border-radius: 16px; padding: 30px; animation: floatIn 0.3s ease; color: var(--text-bright);}
+        @keyframes floatIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         
-        .stat-label { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;}
-        .stat-value-text { font-size: 1.05rem; font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px;}
+        .stat-label { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 4px; text-transform: uppercase;}
+        .stat-value-text { font-size: 1rem; font-weight: 500; }
         
-        .tech-input, select, textarea { background: var(--bg-deep); border: 1px solid var(--border-aura); color: var(--text-bright); padding: 12px; border-radius: 8px; width: 100%; outline: none; transition: 0.3s; font-size: 1rem;}
-        .tech-input:focus, select:focus, textarea:focus { border-color: var(--primary-glow); box-shadow: 0 0 12px rgba(0,240,255,0.3); background: var(--card-bg);}
+        .tech-input, select { background: rgba(0,0,0,0.2); border: 1px solid var(--border-aura); color: var(--text-bright); padding: 10px; border-radius: 8px; width: 100%; outline: none; transition: 0.3s; }
+        .tech-input:focus, select:focus { border-color: var(--primary-glow); box-shadow: 0 0 10px var(--border-aura); background: rgba(0,0,0,0.4); }
         
-        .tech-btn { background: var(--bg-surface); border: 1px solid var(--primary-glow); color: var(--primary-glow); padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
-        .tech-btn:hover { background: var(--primary-glow); color: #000; box-shadow: 0 0 20px var(--primary-glow); }
-        .tech-btn.danger { border-color: var(--danger-neon); color: var(--danger-neon); }
-        .tech-btn.danger:hover { background: var(--danger-neon); color: #fff; box-shadow: 0 0 20px var(--danger-neon); }
-
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-
-        /* 仪表盘样式 */
-        .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
-        .dash-card { background: var(--card-bg); padding: 20px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.3s; border-top: 3px solid var(--primary-glow);}
-        .dash-card:hover { transform: translateY(-5px); background: rgba(0,240,255,0.1); box-shadow: 0 10px 20px rgba(0,0,0,0.3);}
-        .dash-card h4 { font-size: 0.9rem; color: var(--text-dim); margin-bottom: 10px;}
-        .dash-card .num { font-size: 2.5rem; font-weight: 900; color: var(--primary-glow); text-shadow: 0 0 10px rgba(0,240,255,0.5);}
-
-        /* 登录/注册切换 */
-        .auth-switch { color: var(--primary-glow); cursor: pointer; text-decoration: underline; font-size: 0.9rem; margin-top: 15px; display: inline-block;}
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        
+        /* 仪表盘卡片 */
+        .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+        .dash-card { background: var(--card-bg); border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; transition: 0.3s; }
+        .dash-card:hover { transform: translateY(-3px); box-shadow: 0 0 15px var(--border-aura); }
+        .dash-val { font-size: 1.8rem; font-weight: bold; color: var(--primary-glow); margin-top: 5px; }
+        .dash-title { font-size: 0.8rem; color: var(--text-dim); }
     </style>
 </head>
 <body>
 <div class="aurora-field" id="auroraBg"></div>
 
-<div id="loginOverlay" class="holo-overlay" style="display: flex; z-index: 3000;">
-    <div class="holo-dialog dynamic-border" style="text-align:center; width: 420px; padding: 40px;">
-        <h2 style="color:var(--primary-glow); margin-bottom: 10px; font-size: 2rem;">MATRIX OS</h2>
-        <p style="color:var(--text-dim); margin-bottom: 30px; letter-spacing: 2px;">全息指挥中枢 · 量子认证</p>
-        
-        <div id="authFormArea">
-            <input type="text" id="authEmail" class="tech-input" style="margin-bottom:15px;" placeholder="账号邮箱 *">
-            <input type="text" id="authNick" class="tech-input" style="margin-bottom:15px; display:none;" placeholder="您的昵称 *">
-            <input type="password" id="authPwd" class="tech-input" style="margin-bottom:25px;" placeholder="访问密码 *">
-            <button class="tech-btn" id="verifyLoginBtn" style="width: 100%; font-size: 1.1rem; padding: 12px;">接入中枢</button>
-            <div class="auth-switch" id="switchAuthMode" onclick="toggleAuthMode()">没有账号？点击注册成为管理员</div>
-        </div>
+<div id="loginOverlay" class="holo-overlay" style="display: flex; z-index: 9999;">
+    <div class="holo-dialog dynamic-border" style="text-align:center; width: 380px;">
+        <h2 style="color:var(--primary-glow); letter-spacing: 2px;">MATRIX OS</h2>
+        <p style="color:var(--text-dim); margin-bottom: 20px;">全息指挥中枢 · 身份验证</p>
+        <input type="email" id="loginEmail" class="tech-input" style="margin-bottom:15px;" placeholder="账号邮箱">
+        <input type="password" id="loginPwd" class="tech-input" style="margin-bottom:25px;" placeholder="登录密码">
+        <button class="hud-btn" id="verifyLoginBtn" style="width: 100%; padding: 10px; font-size:1.1rem;">接入系统</button>
     </div>
 </div>
 
-<div id="pwdOverlay" class="holo-overlay" style="z-index: 2800;">
-    <div class="holo-dialog dynamic-border" style="width: 400px; text-align: center;">
-        <h3 style="color:var(--primary-glow); margin-bottom: 25px;">🔐 修改密码</h3>
-        <input type="password" id="oldPwd" class="tech-input" style="margin-bottom:15px;" placeholder="旧密码">
-        <input type="password" id="newPwd" class="tech-input" style="margin-bottom:25px;" placeholder="新密码">
-        <div style="display: flex; gap: 15px;">
-            <button class="tech-btn" style="flex:1;" onclick="submitChangePwd()">确认修改</button>
-            <button class="tech-btn danger" style="flex:1;" onclick="closeModal('pwdOverlay')">取消</button>
+<div id="profileOverlay" class="holo-overlay" style="z-index: 3000;">
+    <div class="holo-dialog dynamic-border" style="width: 400px;">
+        <div class="section-title">👤 个人中心</div>
+        <div class="form-grid" style="grid-template-columns: 1fr; gap: 15px;">
+            <div><label class="stat-label">当前邮箱</label><input type="text" id="profEmail" class="tech-input" disabled></div>
+            <div><label class="stat-label">昵称修改</label><input type="text" id="profNick" class="tech-input"></div>
+            <div><label class="stat-label">重置密码 (留空不修改)</label><input type="password" id="profPwd" class="tech-input" placeholder="输入新密码"></div>
+            <button class="hud-btn" onclick="saveProfile()" style="width:100%; margin-top:10px;">💾 保存资料</button>
+            <button class="hud-btn" onclick="logout()" style="width:100%; border-color:var(--danger-neon); color:var(--danger-neon);">🚪 退出登录</button>
+            <button class="hud-btn" onclick="closeProfile()" style="width:100%; background:transparent;">取消</button>
         </div>
     </div>
 </div>
 
 <div id="settingsOverlay" class="holo-overlay" style="z-index: 2500;">
-    <div class="holo-dialog dynamic-border" style="width: 600px;">
-        <h3 style="color:var(--primary-glow); margin-bottom: 20px; border-bottom: 1px solid var(--border-aura); padding-bottom: 10px;">⚙️ 高级配置面板</h3>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
-            <div>
-                <label class="stat-label">自定义系统名称</label>
-                <input type="text" id="customTitle" class="tech-input" value="MATRIX OS">
-            </div>
-            <div>
-                <label class="stat-label">标题颜色</label>
-                <input type="color" id="customTitleColor" class="tech-input" style="height: 46px; cursor:pointer;" value="#00f0ff">
-            </div>
+    <div class="holo-dialog dynamic-border" style="width: 500px;">
+        <div class="section-title">🎨 全息视觉引擎配置</div>
+        <div class="form-grid" style="grid-template-columns: 1fr; gap: 15px; max-height: 50vh; overflow-y:auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center;"><span>系统全局标题</span><input type="text" id="customTitle" class="tech-input" style="width: 250px;"></div>
+            <div style="display:flex; justify-content:space-between; align-items:center;"><span>标题文字发光色</span><input type="color" id="customTitleColor" class="tech-input" style="width: 100px; padding:0; height:40px;"></div>
+            <div style="display:flex; justify-content:space-between; align-items:center;"><span>UI主发光色</span><input type="color" id="customPrimary" class="tech-input" style="width: 100px; padding:0; height:40px;"></div>
         </div>
-        <div style="display: flex; justify-content: flex-end; gap: 15px;">
-            <button class="tech-btn" onclick="saveUserTheme()">💾 保存配置</button>
-            <button class="tech-btn danger" onclick="closeModal('settingsOverlay')">取消</button>
+        <div style="display: flex; gap:10px; margin-top: 25px;">
+            <button class="hud-btn" id="saveSettingsBtn" style="flex:1;">✅ 应用视觉方案</button>
+            <button class="hud-btn" onclick="document.getElementById('settingsOverlay').style.display='none'" style="flex:1;">取消</button>
         </div>
     </div>
 </div>
 
 <header class="glass-header dynamic-border">
     <div class="logo-area">
-        <button class="hud-btn" onclick="togglePanel('leftPanel')">◧ 矩阵</button>
-        <span class="neon-text" id="mainTitle">MATRIX OS</span>
+        <button class="hud-btn" onclick="togglePanel('leftPanel')">◧ 站点矩阵</button>
+        <span class="neon-text" id="mainTitle">MATRIX OS · 全息指挥中枢</span>
     </div>
     <div style="display: flex; gap: 12px; align-items: center;">
-        <input type="text" id="searchInput" class="search-box" placeholder="🔍 工号 / 姓名搜索..." oninput="handleSearch()">
-        
-        <button class="hud-btn" onclick="showView('dashboard')">📊 仪表盘</button>
+        <input type="text" id="searchInput" class="search-box" placeholder="🔍 搜索工号 / 姓名..." oninput="handleSearch()">
+        <button class="hud-btn" onclick="toggleDashboard()">📊 数据看板</button>
         <button class="hud-btn" onclick="cycleLayout()">👁️ 切换视图</button>
-        
         <div class="theme-picker">
-            <div class="theme-icon dark" onclick="setThemePreset('dark')" title="深色模式"></div>
-            <div class="theme-icon light" onclick="setThemePreset('light')" title="浅色模式"></div>
+            <div class="theme-icon dark" onclick="setThemePreset('dark')" title="深色极光"></div>
+            <div class="theme-icon light" onclick="setThemePreset('light')" title="浅色极光"></div>
         </div>
-        
-        <button class="hud-btn" onclick="togglePanel('rightPanel')">终端 ◨</button>
-        
-        <div style="margin-left: 15px; text-align: right; line-height: 1.2;">
-            <div style="font-weight: bold; color: var(--primary-glow);" id="userNickDisplay">未登录</div>
-            <div style="font-size: 0.75rem; color: var(--text-dim); cursor: pointer; text-decoration: underline;" onclick="document.getElementById('pwdOverlay').style.display='flex'">修改密码</div>
-        </div>
-        <button class="hud-btn danger" style="padding: 6px 12px;" onclick="logout()">登出</button>
-        <span class="hud-btn" style="padding: 6px 10px;" onclick="document.getElementById('settingsOverlay').style.display='flex'">⚙️</span>
+        <button class="hud-btn" onclick="openSettings()" title="颜色配置">🎨</button>
+        <button class="hud-btn" id="navStaffBtn">🌌 全站</button>
+        <button class="hud-btn" onclick="togglePanel('rightPanel')">录入终端 ◨</button>
+        <button class="hud-btn" onclick="openProfile()" id="userNickBtn">👤 访客</button>
     </div>
 </header>
 
-<div class="dashboard">
+<div class="dashboard-layout">
     <div class="side-panel dynamic-border" id="leftPanel">
-        <div class="section-title">🚀 部署节点</div>
-        <div id="siteList" style="display:flex; flex-direction:column; gap:5px;"></div>
+        <div class="section-title">🚀 动态部署站点</div>
+        <div class="site-menu-item">
+            <button class="hud-btn" style="width:100%; justify-content:flex-start;" onclick="filterGlobalShift('all')">🌐 全站 · 完整视图</button>
+        </div>
+        <div class="site-menu-item">
+            <button class="hud-btn" style="width:100%; justify-content:flex-start;" onclick="filterGlobalShift('A班')">🔸 全站 · A班过滤</button>
+        </div>
+        <div class="site-menu-item" style="margin-bottom: 20px;">
+            <button class="hud-btn" style="width:100%; justify-content:flex-start;" onclick="filterGlobalShift('B班')">🔸 全站 · B班过滤</button>
+        </div>
+        <div id="siteList" style="display:flex; flex-direction:column; gap:8px;"></div>
     </div>
     
     <div class="main-stage" id="mainStage">
+        <div id="dashboardArea" style="display:none; margin-bottom:30px;">
+            <div class="section-title">📈 矩阵数据中枢</div>
+            <div class="dash-grid" id="roleDashGrid"></div>
+            <div class="section-title">⏳ 司龄分布监测</div>
+            <div class="dash-grid" id="tenureDashGrid"></div>
+        </div>
+
         <div id="staffViewArea">
-            <div class="section-title">
-                <span id="currentViewTitle">🌌 全站档案</span>
-                <span id="resetFilterBtn" style="cursor:pointer; font-size:12px; display:none; background:rgba(255,255,255,0.1); padding: 4px 10px; border-radius:12px;" onclick="resetToFullView()">↺ 重置全局</span>
+            <div class="section-title" style="border-color:var(--success-glow);">
+                <span id="currentViewTitle">👥 全息员工矩阵</span>
+                <button class="hud-btn" style="font-size:12px; padding:2px 10px; display:none;" id="resetFilterBtn" onclick="resetToFullView()">↺ 重置过滤</button>
             </div>
             <div id="hierarchyContainer"></div>
-        </div>
-        
-        <div id="dashboardViewArea" style="display: none;">
-            <div class="section-title">📊 战区数据统计中枢</div>
-            
-            <h3 style="margin: 20px 0 10px; color: var(--primary-glow);">👥 岗位兵力分布</h3>
-            <div class="dash-grid" id="dashRoleGrid"></div>
-            
-            <h3 style="margin: 30px 0 10px; color: var(--success-glow);">⏳ 资历年限分布</h3>
-            <div class="dash-grid" id="dashTenureGrid" style="grid-template-columns: repeat(4, 1fr);">
-                </div>
         </div>
     </div>
     
     <div class="side-panel right-panel hidden-right dynamic-border" id="rightPanel">
-        <div class="section-title" style="color:var(--primary-glow);">⚡ 终端录入录出</div>
+        <div class="section-title" style="color:var(--primary-glow);">⚡ 量子录入终端</div>
         <div class="form-grid" id="editorForm">
             <input type="text" id="f_id" placeholder="工号*" class="tech-input">
             <input type="text" id="f_name" placeholder="姓名*" class="tech-input">
@@ -275,31 +241,25 @@
             <input type="text" id="f_location" placeholder="办公地点" class="tech-input">
             <input type="text" id="f_worktg" placeholder="工作TG (@账号)" class="tech-input">
             <input type="text" id="f_privtg" placeholder="私人TG (@账号)" class="tech-input">
-            <textarea id="f_notes" placeholder="备注" class="tech-input" style="grid-column:1/-1; height: 80px; resize: none;"></textarea>
+            <textarea id="f_notes" placeholder="备注" class="tech-input" style="grid-column:1/-1; height: 80px;"></textarea>
         </div>
-        <div id="adminWriteZone" style="display:none; margin-top:25px; display:flex; flex-direction:column; gap:12px;">
-            <button class="tech-btn" id="confirmWriteBtn" style="border-color:var(--success-glow); color:var(--success-glow); font-size:1.1rem; padding: 12px;">💾 保存至云端 (新增/修改)</button>
-            <button class="tech-btn danger" onclick="clearForm()">🧹 刷新清空表单</button>
+        <div id="adminWriteZone" style="display:none; margin-top:20px; flex-direction:column; gap:12px;">
+            <button class="hud-btn" id="confirmWriteBtn" style="width:100%; border-color:var(--success-glow); color:var(--success-glow); font-size:1.1rem; padding:10px;">💾 同步至云端矩阵</button>
+            <button class="hud-btn" onclick="clearForm()" style="width:100%;">🧹 重置终端缓存</button>
         </div>
-        <div id="readonlyMsg" style="display:none; text-align:center; margin-top:30px; color:var(--danger-neon); font-size:1.2rem; font-weight:bold;">🔒 您的权限限制为只读</div>
+        <div id="readonlyMsg" style="display:none; text-align:center; margin-top:20px; color:var(--danger-neon); border: 1px dashed var(--danger-neon); padding: 10px; border-radius: 8px;">🔒 您的权限不足，仅允许观测数据</div>
     </div>
 </div>
 
-<div id="holoModal" class="holo-overlay">
-    <div class="holo-dialog dynamic-border" id="modalContent"></div>
-</div>
-
 <script>
-    // ⚠️ 替换为您最新部署的 Apps Script URL ⚠️
-    const SCRIPT_URL = "YOUR_NEW_APPS_SCRIPT_WEB_APP_URL";
+    // ⚠️ 替换为你刚才部署的 Google Apps Script URL ⚠️
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzgK-T0ae8cr9zjmhjegqLgTe4RlNy086tVd7iw_CdABYtXTJj7XvirvwpEtJ-XPL1O/exec";
 
     let globalEmployees = [];
-    let currentRole = "Viewer";
-    let currentUserEmail = "";
-    let currentUserNick = "";
-    let isRegisterMode = false;
-    let currentFilter = { type: "all", shift: null, site: null, search: "", dashGroup: null };
-    let currentLayout = "grid"; // ⑩ 切换版本: grid, list, tree
+    let currentUser = { email: "", role: "Viewer", nickname: "访客" };
+    let currentFilter = { type: "all", shift: null, site: null, search: "", role: null, tenure: null };
+    let currentLayout = "grid"; // grid, list, tree
+    let showDash = false;
     
     const roleOrder = ["主管", "助理", "助手", "客服组长", "客服", "出款组长", "出款", "其他"];
     
@@ -315,142 +275,174 @@
         return "其他";
     }
 
-    /* ====== 登录与账号系统 ====== */
-    function toggleAuthMode() {
-        isRegisterMode = !isRegisterMode;
-        document.getElementById('authNick').style.display = isRegisterMode ? 'block' : 'none';
-        document.getElementById('verifyLoginBtn').innerText = isRegisterMode ? '建立新档案 (注册)' : '接入中枢 (登录)';
-        document.getElementById('switchAuthMode').innerText = isRegisterMode ? '已有账号？点击直接登录' : '没有账号？点击注册成为管理员';
+    // 司龄计算
+    function getTenureCategory(dateString) {
+        if(!dateString) return 'unknown';
+        let d = new Date(dateString);
+        if(isNaN(d)) return 'unknown';
+        let months = (new Date() - d) / (1000 * 60 * 60 * 24 * 30.44); 
+        if(months < 3) return 'new';
+        if(months >= 6 && months < 12) return '6m1y';
+        if(months >= 12 && months < 24) return '1y';
+        if(months >= 24) return '2y';
+        return 'other'; // 3-6个月等其他情况
     }
 
-    async function verifyLogin() {
-        const email = document.getElementById('authEmail').value.trim();
-        const pwd = document.getElementById('authPwd').value.trim();
-        const nick = document.getElementById('authNick').value.trim();
-        if(!email || !pwd) return alert("账号和密码必填");
-        if(isRegisterMode && !nick) return alert("注册时必须填写昵称");
-
-        const btn = document.getElementById('verifyLoginBtn');
-        btn.innerText = "量子信道校验中..."; btn.disabled = true;
-
+    /* ====== 核心数据交互 ====== */
+    async function apiCall(action, payload = {}) {
+        const req = { action: action, ...payload };
         try {
-            const res = await fetch(SCRIPT_URL, {
+            const response = await fetch(SCRIPT_URL, {
                 method: 'POST',
-                body: JSON.stringify({ action: isRegisterMode ? 'register' : 'login', email: email, password: pwd, nickname: nick })
+                // 使用纯文本防止复杂 CORS 预检
+                body: JSON.stringify(req)
             });
-            const data = await res.json();
-            if(data.status === 'success') {
-                currentUserEmail = email;
-                currentRole = data.role || "Viewer";
-                currentUserNick = data.nickname || email.split('@')[0];
-                
-                document.getElementById('userNickDisplay').innerText = currentUserNick + ` (${currentRole})`;
-                document.getElementById('loginOverlay').style.display = 'none';
-                
-                if(currentRole === 'Admin') document.getElementById('adminWriteZone').style.display = 'flex';
-                else document.getElementById('readonlyMsg').style.display = 'block';
-                
-                applyCustomTheme();
-                await loadEmployees();
-            } else { 
-                alert(data.msg);
-                btn.innerText = isRegisterMode ? '建立新档案 (注册)' : '接入中枢 (登录)'; 
-                btn.disabled = false; 
-            }
-        } catch(e) { 
-            alert("网络通讯失败，请检查脚本URL或网络");
-            btn.innerText = "重试连接"; btn.disabled = false; 
+            return await response.json();
+        } catch(e) {
+            console.error("API Call Error:", e);
+            alert("通信异常，请检查网络");
+            return { status: 'error', msg: 'Network Error' };
         }
     }
 
-    async function submitChangePwd() {
-        const oldP = document.getElementById('oldPwd').value;
-        const newP = document.getElementById('newPwd').value;
-        if(!oldP || !newP) return alert("密码不能为空");
+    async function verifyLogin() {
+        const email = document.getElementById('loginEmail').value.trim();
+        const pwd = document.getElementById('loginPwd').value.trim();
+        if(!email || !pwd) return alert("信息不完整");
         
-        try {
-            const res = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: 'changePassword', email: currentUserEmail, oldPwd: oldP, newPwd: newP })
-            });
-            const data = await res.json();
-            if(data.status === 'success') {
-                alert("密码修改成功！");
-                closeModal('pwdOverlay');
+        const btn = document.getElementById('verifyLoginBtn');
+        btn.innerText = "量子信道连接中..."; btn.disabled = true;
+        
+        const res = await apiCall('login', { email: email, password: pwd });
+        if(res.status === 'success' && res.allowed) {
+            currentUser = { email: email, role: res.role, nickname: res.nickname || "指挥官" };
+            document.getElementById('userNickBtn').innerText = `👤 ${currentUser.nickname}`;
+            document.getElementById('loginOverlay').style.display = 'none';
+            
+            if(currentUser.role === 'Admin') {
+                document.getElementById('adminWriteZone').style.display = 'flex';
+                document.getElementById('readonlyMsg').style.display = 'none';
             } else {
-                alert(data.msg);
+                document.getElementById('adminWriteZone').style.display = 'none';
+                document.getElementById('readonlyMsg').style.display = 'block';
             }
-        } catch(e) { alert("请求失败"); }
+            
+            loadUserTheme();
+            await loadEmployees();
+        } else { 
+            alert(res.msg || "身份拒绝验证"); 
+        }
+        btn.innerText = "接入系统"; btn.disabled = false;
     }
 
     function logout() {
-        currentUserEmail = "";
+        currentUser = { email: "", role: "Viewer", nickname: "访客" };
+        document.getElementById('profileOverlay').style.display = 'none';
         document.getElementById('loginOverlay').style.display = 'flex';
-        document.getElementById('authPwd').value = '';
+        document.getElementById('loginPwd').value = '';
+        globalEmployees = [];
+        document.getElementById('hierarchyContainer').innerHTML = '';
     }
 
-    /* ====== 主题与UI ====== */
-    function saveUserTheme() {
-        const root = document.documentElement;
-        const color = document.getElementById('customTitleColor').value;
-        const title = document.getElementById('customTitle').value;
-        
-        root.style.setProperty('--title-color', color);
-        document.getElementById('mainTitle').innerText = title;
-        document.title = title;
-        closeModal('settingsOverlay');
-    }
-    
-    function applyCustomTheme() {
-        // Apply inputs from settings
-        document.documentElement.style.setProperty('--title-color', document.getElementById('customTitleColor').value);
-        document.getElementById('mainTitle').innerText = document.getElementById('customTitle').value;
-    }
-
-    function setThemePreset(type) {
-        if (type === 'light') { document.body.classList.add('theme-light'); } 
-        else { document.body.classList.remove('theme-light'); }
-    }
-
-    /* ====== 数据加载与页面交互 ====== */
     async function loadEmployees() {
         try {
+            // GET 请求获取数据
             const resp = await fetch(`${SCRIPT_URL}?action=getEmployees`);
             const data = await resp.json();
             globalEmployees = Array.isArray(data) ? data : [];
             renderSiteList();
-            renderDashboard();
+            updateDashboardStats();
             renderHierarchy();
         } catch (error) {
-            console.error("加载员工失败:", error);
+            console.error("Load Error", error);
         }
     }
 
-    /* ====== 左侧站点与班次下拉 ====== */
+    /* ====== 个人中心 ====== */
+    function openProfile() {
+        document.getElementById('profEmail').value = currentUser.email;
+        document.getElementById('profNick').value = currentUser.nickname;
+        document.getElementById('profPwd').value = '';
+        document.getElementById('profileOverlay').style.display = 'flex';
+    }
+    function closeProfile() { document.getElementById('profileOverlay').style.display = 'none'; }
+    async function saveProfile() {
+        const nick = document.getElementById('profNick').value.trim();
+        const pwd = document.getElementById('profPwd').value.trim();
+        const res = await apiCall('updateProfile', { email: currentUser.email, nickname: nick, newPwd: pwd });
+        if(res.status === 'success') {
+            alert("个人资料更新成功！");
+            if(nick) {
+                currentUser.nickname = nick;
+                document.getElementById('userNickBtn').innerText = `👤 ${nick}`;
+            }
+            closeProfile();
+        } else alert("更新失败: " + res.msg);
+    }
+
+    /* ====== 看板与统计 ====== */
+    function toggleDashboard() {
+        showDash = !showDash;
+        document.getElementById('dashboardArea').style.display = showDash ? 'block' : 'none';
+        if(showDash) updateDashboardStats();
+    }
+
+    function updateDashboardStats() {
+        let stats = { 全员: globalEmployees.length };
+        roleOrder.forEach(r => stats[r] = 0);
+        let tenures = { new:0, '6m1y':0, '1y':0, '2y':0 };
+        
+        globalEmployees.forEach(emp => {
+            const g = getRoleGroup(emp['岗位']);
+            if(stats[g] !== undefined) stats[g]++;
+            
+            const t = getTenureCategory(emp['入职日期']);
+            if(tenures[t] !== undefined) tenures[t]++;
+        });
+
+        document.getElementById('roleDashGrid').innerHTML = `
+            <div class="dash-card dynamic-border" onclick="filterByDash('role', 'all')"><div class="dash-title">全站矩阵人数</div><div class="dash-val">${stats['全员']}</div></div>
+            <div class="dash-card dynamic-border" onclick="filterByDash('role', '主管')"><div class="dash-title">主管团队</div><div class="dash-val">${stats['主管']}</div></div>
+            <div class="dash-card dynamic-border" onclick="filterByDash('role', '助理')"><div class="dash-title">助理团队</div><div class="dash-val">${stats['助理']}</div></div>
+            <div class="dash-card dynamic-border" onclick="filterByDash('role', '助手')"><div class="dash-title">助手团队</div><div class="dash-val">${stats['助手']}</div></div>
+            <div class="dash-card dynamic-border" onclick="filterByDash('role', '客服组长')"><div class="dash-title">客服组长</div><div class="dash-val">${stats['客服组长']}</div></div>
+            <div class="dash-card dynamic-border" onclick="filterByDash('role', '客服')"><div class="dash-title">客服专员</div><div class="dash-val">${stats['客服']}</div></div>
+            <div class="dash-card dynamic-border" onclick="filterByDash('role', '出款组长')"><div class="dash-title">出款组长</div><div class="dash-val">${stats['出款组长']}</div></div>
+            <div class="dash-card dynamic-border" onclick="filterByDash('role', '出款')"><div class="dash-title">出款审核</div><div class="dash-val">${stats['出款']}</div></div>
+        `;
+        
+        document.getElementById('tenureDashGrid').innerHTML = `
+            <div class="dash-card dynamic-border" onclick="filterByDash('tenure', 'new')"><div class="dash-title">新人 (3个月内)</div><div class="dash-val">${tenures['new']}</div></div>
+            <div class="dash-card dynamic-border" onclick="filterByDash('tenure', '6m1y')"><div class="dash-title">稳定 (6个月-1年)</div><div class="dash-val">${tenures['6m1y']}</div></div>
+            <div class="dash-card dynamic-border" onclick="filterByDash('tenure', '1y')"><div class="dash-title">资深 (1年以上)</div><div class="dash-val">${tenures['1y']}</div></div>
+            <div class="dash-card dynamic-border" onclick="filterByDash('tenure', '2y')"><div class="dash-title">元老 (2年以上)</div><div class="dash-val">${tenures['2y']}</div></div>
+        `;
+    }
+
+    function filterByDash(type, val) {
+        resetToFullView(false); // 重置但不重新渲染
+        if(val !== 'all') {
+            if(type === 'role') currentFilter.role = val;
+            if(type === 'tenure') currentFilter.tenure = val;
+            document.getElementById('resetFilterBtn').style.display = 'inline-block';
+        }
+        renderHierarchy();
+    }
+
+    /* ====== 站点导航 ====== */
     function renderSiteList() {
         const sites = [...new Set(globalEmployees.map(e=>e['站点']).filter(Boolean))];
         const container = document.getElementById('siteList');
-        
-        // 包含全站的下拉
-        container.innerHTML = `
-            <div class="site-menu-item">
-                <button class="hud-btn" style="width:100%; border-color:var(--primary-glow);" onclick="toggleSiteShifts('all', null)">🌐 全站矩阵 ▼</button>
-                <div class="site-shifts" id="shifts-for-all">
-                    <button class="shift-btn" onclick="filterBySite(null, null)">🔹 全站所有</button>
-                    <button class="shift-btn" onclick="filterBySite(null, 'A班')">🔸 全站 A班</button>
-                    <button class="shift-btn" onclick="filterBySite(null, 'B班')">🔸 全站 B班</button>
-                </div>
-            </div>`;
-            
+        container.innerHTML = '';
         sites.forEach((site, index) => {
             const safeSite = site.replace(/'/g, "\\'");
             container.innerHTML += `
             <div class="site-menu-item">
-                <button class="hud-btn" style="width:100%;" onclick="toggleSiteShifts(${index}, '${safeSite}')">📡 ${site} ▼</button>
-                <div class="site-shifts" id="shifts-for-${index}">
-                    <button class="shift-btn" onclick="filterBySite('${safeSite}', null)">🔹 该站全班</button>
-                    <button class="shift-btn" onclick="filterBySite('${safeSite}', 'A班')">🔸 该站 A班</button>
-                    <button class="shift-btn" onclick="filterBySite('${safeSite}', 'B班')">🔸 该站 B班</button>
+                <button class="hud-btn" style="width:100%; justify-content:flex-start;" onclick="toggleSiteShifts(${index}, '${safeSite}')">📡 站点: ${site} ▼</button>
+                <div class="site-shifts dynamic-border" style="border-radius:6px; padding: 10px; margin-top:5px;" id="shifts-for-${index}">
+                    <button class="shift-btn" onclick="filterBySite('${safeSite}', null)">🔹 全部班次查看</button>
+                    <button class="shift-btn" onclick="filterBySite('${safeSite}', 'A班')">🔸 A班 矩阵</button>
+                    <button class="shift-btn" onclick="filterBySite('${safeSite}', 'B班')">🔸 B班 矩阵</button>
                 </div>
             </div>`;
         });
@@ -458,28 +450,35 @@
 
     function toggleSiteShifts(index, site) {
         document.querySelectorAll('.site-shifts').forEach(el => el.classList.remove('active'));
-        document.getElementById(`shifts-for-${index}`).classList.add('active');
+        document.getElementById(`shifts-for-${index}`).classList.toggle('active');
         filterBySite(site, null);
     }
     
+    function filterGlobalShift(shift) {
+        resetToFullView(false);
+        if(shift !== 'all') currentFilter.shift = shift;
+        renderHierarchy();
+        document.getElementById('resetFilterBtn').style.display = shift !== 'all' ? 'inline-block' : 'none';
+    }
+
     function filterBySite(site, shift = null) {
-        currentFilter = { type: "all", site: site, shift: shift, search: "", dashGroup: null };
-        document.getElementById('searchInput').value = "";
-        showView('staff');
+        resetToFullView(false);
+        currentFilter.site = site;
+        currentFilter.shift = shift;
         renderHierarchy();
         document.getElementById('resetFilterBtn').style.display = 'inline-block';
     }
     
-    function resetToFullView() {
-        filterBySite(null, null);
-        document.querySelectorAll('.site-shifts').forEach(el => el.classList.remove('active'));
+    function resetToFullView(render = true) {
+        currentFilter = { type: "all", site: null, shift: null, search: "", role: null, tenure: null };
+        document.getElementById('searchInput').value = "";
         document.getElementById('resetFilterBtn').style.display = 'none';
+        document.querySelectorAll('.site-shifts').forEach(el => el.classList.remove('active'));
+        if(render) renderHierarchy();
     }
 
     function handleSearch() {
         currentFilter.search = document.getElementById('searchInput').value.trim().toLowerCase();
-        currentFilter.dashGroup = null; 
-        showView('staff');
         renderHierarchy();
         document.getElementById('resetFilterBtn').style.display = currentFilter.search ? 'inline-block' : 'none';
     }
@@ -488,94 +487,29 @@
         if(currentLayout === 'grid') currentLayout = 'list';
         else if(currentLayout === 'list') currentLayout = 'tree';
         else currentLayout = 'grid';
-        showView('staff');
         renderHierarchy();
     }
-    
-    function showView(view) {
-        document.getElementById('staffViewArea').style.display = view === 'staff' ? 'block' : 'none';
-        document.getElementById('dashboardViewArea').style.display = view === 'dashboard' ? 'block' : 'none';
-    }
 
-    /* ====== 仪表盘计算 ====== */
-    function calculateTenure(hireDateStr) {
-        if (!hireDateStr) return -1;
-        const hireDate = new Date(hireDateStr);
-        if (isNaN(hireDate)) return -1;
-        const diffTime = Math.abs(new Date() - hireDate);
-        return Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Days
-    }
-
-    function renderDashboard() {
-        let rolesCount = { "总人数": globalEmployees.length, "主管": 0, "助理": 0, "助手": 0, "客服组长": 0, "客服": 0, "出款组长": 0, "出款": 0 };
-        let tenureCount = { "新人(3个月内)": 0, "6个月至1年": 0, "1年以上": 0, "2年以上": 0 };
-        
-        globalEmployees.forEach(emp => {
-            const roleG = getRoleGroup(emp['岗位']);
-            if(rolesCount[roleG] !== undefined) rolesCount[roleG]++;
-            
-            const days = calculateTenure(emp['入职日期']);
-            if (days >= 0) {
-                if (days <= 90) tenureCount["新人(3个月内)"]++;
-                else if (days > 180 && days <= 365) tenureCount["6个月至1年"]++;
-                else if (days > 365 && days <= 730) tenureCount["1年以上"]++;
-                else if (days > 730) tenureCount["2年以上"]++;
-            }
-        });
-
-        // 渲染岗位
-        let roleHtml = `<div class="dash-card" onclick="filterByDashboard('role', 'all')"><h4>🌟 总人数</h4><div class="num">${rolesCount["总人数"]}</div></div>`;
-        ["主管", "助理", "助手", "客服组长", "客服", "出款组长", "出款"].forEach(r => {
-            roleHtml += `<div class="dash-card" onclick="filterByDashboard('role', '${r}')"><h4>🛡️ ${r}</h4><div class="num">${rolesCount[r]}</div></div>`;
-        });
-        document.getElementById('dashRoleGrid').innerHTML = roleHtml;
-        
-        // 渲染年限
-        let tenureHtml = '';
-        Object.keys(tenureCount).forEach(t => {
-            tenureHtml += `<div class="dash-card" style="border-top-color:var(--success-glow);" onclick="filterByDashboard('tenure', '${t}')"><h4>🕰️ ${t}</h4><div class="num" style="color:var(--success-glow);">${tenureCount[t]}</div></div>`;
-        });
-        document.getElementById('dashTenureGrid').innerHTML = tenureHtml;
-    }
-
-    function filterByDashboard(type, val) {
-        currentFilter = { type: "all", site: null, shift: null, search: "", dashGroup: { type, val } };
-        showView('staff');
-        renderHierarchy();
-        document.getElementById('resetFilterBtn').style.display = 'inline-block';
-    }
-
-    /* ====== 渲染核心卡片与列表 ====== */
+    /* ====== 视图渲染 ====== */
     function renderHierarchy() {
         let filtered = [...globalEmployees];
         
         if(currentFilter.site) filtered = filtered.filter(e => e['站点'] === currentFilter.site);
         if(currentFilter.shift) filtered = filtered.filter(e => e['班次'] === currentFilter.shift);
+        if(currentFilter.role) filtered = filtered.filter(e => getRoleGroup(e['岗位']) === currentFilter.role);
+        if(currentFilter.tenure) filtered = filtered.filter(e => getTenureCategory(e['入职日期']) === currentFilter.tenure);
         if(currentFilter.search) {
             filtered = filtered.filter(e => 
-                (e['姓名'] && e['姓名'].toLowerCase().includes(currentFilter.search)) ||
+                (e['姓名'] && String(e['姓名']).toLowerCase().includes(currentFilter.search)) ||
                 (e['工号'] && String(e['工号']).toLowerCase().includes(currentFilter.search))
             );
         }
-        if(currentFilter.dashGroup) {
-            const dg = currentFilter.dashGroup;
-            if(dg.type === 'role' && dg.val !== 'all') {
-                filtered = filtered.filter(e => getRoleGroup(e['岗位']) === dg.val);
-            } else if (dg.type === 'tenure') {
-                filtered = filtered.filter(e => {
-                    const d = calculateTenure(e['入职日期']);
-                    if (d < 0) return false;
-                    if (dg.val === "新人(3个月内)") return d <= 90;
-                    if (dg.val === "6个月至1年") return d > 180 && d <= 365;
-                    if (dg.val === "1年以上") return d > 365 && d <= 730;
-                    if (dg.val === "2年以上") return d > 730;
-                    return false;
-                });
-            }
-        }
         
-        const groups = {主管:[],助理:[],助手:[],客服组长:[],客服:[],出款组长:[],出款:[],其他:[]};
-        filtered.forEach(emp => { groups[getRoleGroup(emp['岗位'])].push(emp); });
+        const groups = {}; roleOrder.forEach(r => groups[r] = []);
+        filtered.forEach(emp => { 
+            const g = getRoleGroup(emp['岗位']); 
+            if(groups[g]) groups[g].push(emp); else groups['其他'].push(emp); 
+        });
         
         const container = document.getElementById('hierarchyContainer');
         container.innerHTML = '';
@@ -584,25 +518,30 @@
         if(currentLayout === 'list') containerClass = "staff-list";
         if(currentLayout === 'tree') containerClass = "staff-tree";
 
-        for(let key of roleOrder) {
-            if(groups[key] && groups[key].length) {
+        let totalRendered = 0;
+        roleOrder.forEach(key => {
+            if(groups[key].length > 0) {
+                totalRendered += groups[key].length;
                 const groupDiv = document.createElement('div');
-                groupDiv.style.marginBottom = "30px";
-                groupDiv.innerHTML = `<div style="font-size:0.9rem; font-weight:bold; letter-spacing:2px; padding:6px 16px; background:rgba(0,240,255,0.1); border-left:3px solid var(--primary-glow); display:inline-block; border-radius:4px; margin-bottom:15px;">${key}组 (${groups[key].length}人)</div><div class="${containerClass}" id="grid-${key}"></div>`;
+                groupDiv.style.marginBottom = "24px";
+                groupDiv.innerHTML = `<div style="font-size: 0.85rem; letter-spacing: 2px; color: var(--primary-glow); margin-bottom: 12px; font-weight:bold; border-bottom: 1px solid var(--border-aura); padding-bottom:5px; display:inline-block;">❖ ${key} 团队 (${groups[key].length})</div><div class="${containerClass}"></div>`;
                 container.appendChild(groupDiv);
                 
                 const gridDiv = groupDiv.querySelector(`.${containerClass}`);
                 groups[key].forEach(emp => gridDiv.appendChild(createStaffCard(emp)));
             }
-        }
+        });
         
-        // 更新标题
-        let titleText = "🌌 全站档案";
-        if(currentFilter.site) titleText = `📍 节点: ${currentFilter.site}`;
-        if(currentFilter.shift) titleText += ` [${currentFilter.shift}]`;
-        if(currentFilter.dashGroup) titleText += ` - 仪表盘筛选 [${currentFilter.dashGroup.val}]`;
-        if(currentFilter.search) titleText += ` (搜索结果)`;
-        document.getElementById('currentViewTitle').innerHTML = titleText;
+        if(totalRendered === 0) {
+            container.innerHTML = `<div style="text-align:center; margin-top: 50px; color: var(--text-dim);">该筛选条件下没有人员记录</div>`;
+        }
+
+        // 标题动态修改
+        let t = "👥 全息矩阵";
+        if(currentFilter.site) t += ` · ${currentFilter.site}`;
+        if(currentFilter.shift) t += ` (${currentFilter.shift})`;
+        if(currentFilter.role) t += ` [${currentFilter.role}筛选]`;
+        document.getElementById('currentViewTitle').innerHTML = t;
     }
     
     function createStaffCard(emp) {
@@ -612,20 +551,18 @@
         
         if (currentLayout === 'grid' || currentLayout === 'tree') {
             card.innerHTML = `
-                <div class="card-site"><span>${emp['站点']||'未分配'}</span><span style="color:var(--success-glow);">${emp['班次']||''}</span></div>
-                <div class="staff-name">${emp['姓名']||'?'}<small style="color:var(--text-dim);font-size:0.8rem; font-family:'Share Tech Mono';">#${emp['工号']||''}</small></div>
+                <div class="card-site"><span>${emp['站点']||'-'}</span><span>${emp['班次']||''}</span></div>
+                <div class="staff-name">${emp['姓名']||'?'}<small style="color:var(--text-dim);font-size:0.8rem;">#${emp['工号']||''}</small></div>
                 <div class="staff-role">${emp['岗位']||'员工'}</div>
-                <div class="staff-meta"><span>📅 入职: ${emp['入职日期']||'未知'}</span><span style="color:var(--text-bright);">等级: ${emp['等级']||'-'}</span></div>
+                <div class="staff-meta"><span>入职: ${emp['入职日期']||'-'}</span><span style="color:var(--success-glow);">${emp['工作TG']||''}</span></div>
             `;
         } else {
             card.innerHTML = `
-                <div style="display:flex; gap:15px; align-items:center;">
-                    <strong style="width:120px; font-size:1.1rem;">${emp['姓名']}</strong>
-                    <span style="width:80px; color:var(--text-dim); font-family:'Share Tech Mono';">#${emp['工号']}</span>
-                    <span class="staff-role">${emp['岗位']}</span>
-                </div>
                 <div style="display:flex; gap:20px; align-items:center;">
-                    <span style="color:var(--primary-glow); font-size:0.85rem; width: 120px;">${emp['站点']||'-'} / ${emp['班次']||'-'}</span>
+                    <strong style="width:120px; color:var(--text-bright);">${emp['姓名']}</strong>
+                    <span style="width:80px; color:var(--text-dim);">#${emp['工号']}</span>
+                    <span class="staff-role" style="width:100px; text-align:center;">${emp['岗位']}</span>
+                    <span style="color:var(--primary-glow); font-size:0.85rem; width:150px;">${emp['站点']||'-'} / ${emp['班次']||'-'}</span>
                     <span style="color:var(--success-glow); font-size:0.85rem;">工作TG: ${emp['工作TG']||'-'}</span>
                 </div>
             `;
@@ -633,46 +570,45 @@
         return card;
     }
 
-    /* ====== 弹窗展示与资料 ====== */
+    /* ====== 资料弹窗 ====== */
     function showEmployeeProfile(emp) {
         const modal = document.getElementById('holoModal');
         const content = document.getElementById('modalContent');
         
         content.innerHTML = `
-            <h2 style="color:var(--primary-glow); margin-bottom:20px; border-bottom: 2px dashed var(--border-aura); padding-bottom:10px;">
-                🧬 ${emp['姓名']} · 档案记录
+            <h2 style="color:var(--primary-glow); margin-bottom:20px; border-bottom: 2px dashed var(--border-aura); padding-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+                <span>🧬 员工全息档案</span>
+                <span style="font-size:1rem; color:var(--text-bright);">${emp['姓名']} (#${emp['工号']})</span>
             </h2>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom: 30px; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px;">
-                <div><div class="stat-label">工号</div><div class="stat-value-text" style="font-family:'Share Tech Mono'; color:var(--primary-glow);">${emp['工号']||'-'}</div></div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom: 25px;">
                 <div><div class="stat-label">岗位 / 等级</div><div class="stat-value-text">${emp['岗位']||'-'} / ${emp['等级']||'-'}</div></div>
                 <div><div class="stat-label">站点 / 班次</div><div class="stat-value-text">${emp['站点']||'-'} / ${emp['班次']||'-'}</div></div>
                 <div><div class="stat-label">上司工号</div><div class="stat-value-text">${emp['上司工号']||'-'}</div></div>
+                <div><div class="stat-label">性别 / 国籍</div><div class="stat-value-text">${emp['性别']||'-'} / ${emp['国籍']||'-'}</div></div>
                 <div><div class="stat-label">入职日期</div><div class="stat-value-text">${emp['入职日期']||'-'}</div></div>
                 <div><div class="stat-label">出生日期</div><div class="stat-value-text">${emp['出生日期']||'-'}</div></div>
-                <div><div class="stat-label">国籍 / 性别</div><div class="stat-value-text">${emp['国籍']||'-'} / ${emp['性别']||'-'}</div></div>
                 <div><div class="stat-label">办公室 / 地点</div><div class="stat-value-text">${emp['办公室号']||'-'} / ${emp['办公地点']||'-'}</div></div>
-                
+                <div><div class="stat-label">邮箱</div><div class="stat-value-text">${emp['邮箱']||'-'}</div></div>
                 <div><div class="stat-label">工作 TG</div><div class="stat-value-text" style="color:var(--success-glow);">${emp['工作TG']||'-'}</div></div>
                 <div><div class="stat-label">私人 TG</div><div class="stat-value-text">${emp['私人TG']||'-'}</div></div>
-                
-                <div style="grid-column:1/-1;"><div class="stat-label">系统备注</div><div class="stat-value-text" style="min-height: 40px;">${emp['备注']||'无'}</div></div>
+                <div style="grid-column:1/-1;"><div class="stat-label">备 注信 息</div><div class="stat-value-text">${emp['备注']||'无'}</div></div>
             </div>
             <div style="display:flex; gap:15px; justify-content:flex-end;">
-                ${currentRole === 'Admin' ? `<button class="tech-btn danger" onclick="confirmDelete('${emp['工号']}')">🗑️ 抹除档案</button>` : ''}
-                ${currentRole === 'Admin' ? `<button class="tech-btn" onclick="fillFormForEdit('${emp['工号']}')">✏️ 提取至终端编辑</button>` : ''}
-                <button class="tech-btn" style="border-color:var(--text-dim); color:var(--text-bright);" onclick="closeModal('holoModal')">✖ 退出终端</button>
+                ${currentUser.role === 'Admin' ? `<button class="hud-btn" style="border-color:var(--danger-neon); color:var(--danger-neon);" onclick="deleteEmployee('${emp['工号']}')">🗑️ 摧毁档案</button>` : ''}
+                ${currentUser.role === 'Admin' ? `<button class="hud-btn" onclick="fillFormForEdit('${emp['工号']}')">✏️ 提取编辑</button>` : ''}
+                <button class="hud-btn" onclick="closeModal()">✖ 结束观测</button>
             </div>
         `;
         modal.style.display = 'flex';
     }
-    
+
     function fillFormForEdit(id) {
-        closeModal('holoModal');
+        closeModal();
         const emp = globalEmployees.find(e => String(e['工号']) === String(id));
         if(!emp) return;
         document.getElementById('rightPanel').classList.remove('hidden-right');
         
-        // 严格对照表头
+        // 严格按照17列表头顺序
         const fields = ["工号", "姓名", "性别", "岗位", "站点", "班次", "上司工号", "邮箱", "入职日期", "出生日期", "国籍", "办公室号", "等级", "办公地点", "工作TG", "私人TG", "备注"];
         const ids = ["f_id", "f_name", "f_gender", "f_pos", "f_dept", "f_shift", "f_manager", "f_email", "f_hire", "f_dob", "f_nation", "f_office", "f_level", "f_location", "f_worktg", "f_privtg", "f_notes"];
         
@@ -682,15 +618,15 @@
         });
     }
 
-    /* ====== 核心数据：新增/修改/删除 ====== */
+    /* ====== 写入与删除 ====== */
     async function confirmWrite() {
-        if(currentRole !== 'Admin') return alert("无终端写入权限");
+        if(currentUser.role !== 'Admin') return alert("权限拒绝");
         const f_id = document.getElementById('f_id').value.trim();
         const f_name = document.getElementById('f_name').value.trim();
-        if(!f_id || !f_name) return alert("⚠️ 警告：必须填写工号与姓名以建立索引！");
+        if(!f_id || !f_name) return alert("⚠️ 工号和姓名必须填写！");
         
         const btn = document.getElementById('confirmWriteBtn');
-        btn.innerText = "云端同步中..."; btn.disabled = true;
+        btn.innerText = "数据同步中..."; btn.disabled = true;
 
         const empData = {
             "工号": f_id, "姓名": f_name, "性别": document.getElementById('f_gender').value,
@@ -703,62 +639,85 @@
             "私人TG": document.getElementById('f_privtg').value, "备注": document.getElementById('f_notes').value
         };
 
-        try {
-            // 改为 POST 避免 CORS 和长 URL 截断问题
-            const response = await fetch(SCRIPT_URL, { 
-                method:'POST', 
-                body: JSON.stringify({ action: 'saveEmployee', data: empData })
-            });
-            const result = await response.json();
-            if(result.status === 'success') { 
-                alert("✅ 档案已成功写入区块链云端！");
-                clearForm();
-                await loadEmployees(); 
-            } else {
-                alert("❌ 写入失败: " + result.msg);
-            }
-        } catch(e) { alert("网络异常: 请检查脚本部署是否允许跨域 POST。"); }
+        const res = await apiCall('saveEmployee', { data: empData });
+        if(res.status === 'success') { 
+            alert("✅ 数据云端同步完成！"); 
+            clearForm();
+            await loadEmployees(); 
+        } else {
+            alert("❌ 同步失败: " + res.msg);
+        }
+        btn.innerText = "💾 同步至云端矩阵"; btn.disabled = false;
+    }
+
+    async function deleteEmployee(id) {
+        if(!confirm(`⚠️ 高危操作：确定要永久抹除工号 [${id}] 的所有痕迹吗？`)) return;
+        const res = await apiCall('deleteEmployee', { id: id });
+        if(res.status === 'success') { 
+            alert("✅ 档案已粉碎"); 
+            closeModal();
+            await loadEmployees(); 
+        } else { alert("❌ 删除失败: " + res.msg); }
+    }
+
+    /* ====== 主题与全局配色设置 ====== */
+    function loadUserTheme() {
+        const saved = localStorage.getItem(`theme_${currentUser.email}`);
+        if(saved) applyCustomTheme(JSON.parse(saved));
+    }
+    
+    function applyCustomTheme(theme) {
+        const root = document.documentElement;
+        if(theme.titleColor) root.style.setProperty('--title-color', theme.titleColor);
+        if(theme.primary) root.style.setProperty('--primary-glow', theme.primary);
         
-        btn.innerText = "💾 保存至云端 (新增/修改)"; btn.disabled = false;
+        const titleText = theme.title || "MATRIX OS · 全息指挥中枢";
+        document.getElementById('mainTitle').innerText = titleText;
+        document.title = titleText;
+        
+        document.getElementById('customTitleColor').value = theme.titleColor || "#00f0ff";
+        document.getElementById('customPrimary').value = theme.primary || "#00f0ff";
+        document.getElementById('customTitle').value = titleText;
+    }
+    
+    function setThemePreset(type) {
+        if (type === 'light') document.body.classList.add('theme-light');
+        else document.body.classList.remove('theme-light');
     }
 
-    async function confirmDelete(id) {
-        if(!confirm(`⚠️ 严重警告：确认执行物理级抹除操作？工号 [${id}] 的档案将永久销毁！`)) return;
-        try {
-            const response = await fetch(SCRIPT_URL, { 
-                method:'POST', 
-                body: JSON.stringify({ action: 'deleteEmployee', id: id })
-            });
-            const result = await response.json();
-            if(result.status === 'success') { 
-                alert("✅ 目标档案已抹除");
-                closeModal('holoModal');
-                await loadEmployees(); 
-            } else { alert("❌ 抹除失败: " + result.msg); }
-        } catch(e) { alert("网络异常"); }
-    }
+    document.getElementById('saveSettingsBtn').onclick = () => {
+        const theme = {
+            titleColor: document.getElementById('customTitleColor').value,
+            primary: document.getElementById('customPrimary').value,
+            title: document.getElementById('customTitle').value
+        };
+        localStorage.setItem(`theme_${currentUser.email}`, JSON.stringify(theme));
+        applyCustomTheme(theme);
+        document.getElementById('settingsOverlay').style.display = 'none';
+    };
 
-    /* ====== 辅助交互功能 ====== */
+    /* ====== 辅助工具 ====== */
     function clearForm() { 
-        document.querySelectorAll('#editorForm input, #editorForm textarea').forEach(i=>i.value='');
+        document.querySelectorAll('#editorForm input, #editorForm textarea').forEach(i=>i.value=''); 
         document.getElementById('f_gender').value = '男';
         document.getElementById('f_shift').value = 'A班';
     }
-    
     function togglePanel(id) { document.getElementById(id).classList.toggle(id==='leftPanel'?'hidden-left':'hidden-right'); }
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function closeModal() { document.getElementById('holoModal').style.display = 'none'; }
+    function openSettings() { document.getElementById('settingsOverlay').style.display = 'flex'; }
     
     // 初始化事件绑定
-    document.getElementById('verifyLoginBtn').onclick = verifyLogin;
+    document.getElementById('navStaffBtn').onclick = resetToFullView;
     document.getElementById('confirmWriteBtn').onclick = confirmWrite;
+    document.getElementById('verifyLoginBtn').onclick = verifyLogin;
     
-    // 点击弹窗外部关闭
-    document.querySelectorAll('.holo-overlay').forEach(modal => {
-        modal.addEventListener('click', function(e) {
-            if(e.target === this && this.id !== 'loginOverlay') { this.style.display = 'none'; }
-        });
-    });
-
+    // 模态框初始化
+    const modalDiv = document.createElement('div');
+    modalDiv.id = 'holoModal';
+    modalDiv.className = 'holo-overlay';
+    modalDiv.onclick = (e) => { if(e.target === modalDiv) closeModal(); };
+    modalDiv.innerHTML = '<div class="holo-dialog dynamic-border" id="modalContent"></div>';
+    document.body.appendChild(modalDiv);
 </script>
 </body>
 </html>
