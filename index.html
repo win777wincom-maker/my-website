@@ -73,10 +73,17 @@
             100% { border-color: var(--primary-glow); box-shadow: 0 0 18px rgba(0, 240, 255, 0.45); }
         }
 
-        /* 滚动条视效强化 */
+       /* 滚动条视效强化 */
         ::-webkit-scrollbar { width: 6px; height: 6px; } 
         ::-webkit-scrollbar-track { background: transparent; } 
         ::-webkit-scrollbar-thumb { background: var(--primary-glow); border-radius: 4px; }
+
+        /* 【新增修复】完美适配浅色主题下的卡片悬停视觉，防止字底颜色冲突 */
+        body.theme-light .staff-card:hover {
+            background: rgba(0, 102, 204, 0.08) !important;
+            border-color: var(--primary-glow) !important;
+            box-shadow: 0 0 15px rgba(0, 102, 204, 0.2);
+        }
         
         /* 顶部导航区域 */
         .glass-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; backdrop-filter: blur(var(--glass-blur)); background: var(--bg-surface); z-index: 100; border-bottom: 2px solid var(--primary-glow);}
@@ -330,9 +337,9 @@
     // 固定分层流布局排序规则
     const roleOrder = ["主管", "助理", "助手", "客服组长", "客服", "出款组长", "出款", "其他"];
     const roleMap = {
-        "主管": "👑 决策主管层", "助理": "📋 核心助理执行体", "助手": "🛠️ 全息技术助手",
-        "客服组长": "🎧 业务客服总长", "客服": "💬 客户在线服务专员", "出款组长": "💰 金流出款总调度", 
-        "出款": "💸 财务安全出款审核", "其他": "🔮 边缘扩展序列"
+        "主管": "👑 主管层", "助理": "📋 助理层", "助手级": "🛠️ 全息技术助手",
+        "客服组长": "🎧 客服组长", "客服": "💬 客服专员", "出款组长": "💰 金流出款总调度", 
+        "出款": "💸 出款组长", "出款审核": "🔮 边缘扩展序列"
     };
 
     function getRoleGroup(role) {
@@ -493,8 +500,8 @@
                 <button class="hud-btn" style="text-align:left; width:100%;" onclick="toggleCascadingShifts(${index}, '${escaped}')">📡 ${site} ▼</button>
                 <div class="site-shifts" id="shift-layer-${index}">
                     <button class="shift-btn" onclick="executeSiteFilter('${escaped}', '全班')">🔹 全班复合制</button>
-                    <button class="shift-btn" onclick="executeSiteFilter('${escaped}', 'A班')">🔸 太阳级 A班</button>
-                    <button class="shift-btn" onclick="executeSiteFilter('${escaped}', 'B班')">🔸 太阴级 B班</button>
+                    <button class="shift-btn" onclick="executeSiteFilter('${escaped}', 'A班')">🔸 金星 A班</button>
+                    <button class="shift-btn" onclick="executeSiteFilter('${escaped}', 'B班')">🔸 银河 B班</button>
                 </div>
             </div>`;
         });
@@ -537,132 +544,138 @@
         renderHierarchyEngine();
     }
 
-    /* ====== 数据分析可视化仪表盘综合计算引擎 ====== */
-    function renderMetricsDashboard() {
-        const now = new Date("2026-05-20"); // 设定运行沙盒参照基准时空
-        let metrics = {
-            total: 0, 主管: 0, 助理: 0, 助手: 0, 客服组长: 0, 客服: 0, 出款组长: 0, 出款: 0,
-            newbie: 0, mid1: 0, mid2: 0, senior: 0
-        };
+   /* ====== 数据分析可视化仪表盘综合计算引擎（已新增A/B班统计） ====== */
+function renderMetricsDashboard() {
+    const now = new Date("2026-05-20"); // 设定运行沙盒参照基准时空
+    let metrics = {
+        total: 0, 主管: 0, 助理: 0, 助手: 0, 客服组长: 0, 客服: 0, 出款组长: 0, 出款: 0,
+        newbie: 0, mid1: 0, mid2: 0, senior: 0,
+        shiftA: 0, shiftB: 0 // 【新增】A/B班计数器
+    };
+    
+    globalEmployees.forEach(e => {
+        metrics.total++;
+        const g = getRoleGroup(e['岗位']);
+        if (metrics[g] !== undefined) metrics[g]++;
         
-        globalEmployees.forEach(e => {
-            metrics.total++;
-            const g = getRoleGroup(e['岗位']);
-            if (metrics[g] !== undefined) metrics[g]++;
+        // 【新增】扫描员工班次
+        if (e['班次'] === 'A班') metrics.shiftA++;
+        if (e['班次'] === 'B班') metrics.shiftB++;
+        
+        // 服务资历多维计算
+        if (e['入职日期']) {
+            const hireDate = new Date(e['入职日期']);
+            const diffTime = Math.abs(now - hireDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             
-            // 服务资历多维计算
-            if (e['入职日期']) {
-                const hireDate = new Date(e['入职日期']);
-                const diffTime = Math.abs(now - hireDate);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                
-                if (diffDays <= 90) metrics.newbie++;
-                else if (diffDays > 180 && diffDays <= 365) metrics.mid1++;
-                else if (diffDays > 365 && diffDays <= 730) metrics.mid2++;
-                else if (diffDays > 730) metrics.senior++;
-            }
-        });
-        
-        const cards = [
-            { label: "🌌 总指挥矩阵人员", val: metrics.total, criteria: { type: "all" } },
-            { label: "👑 决策主管", val: metrics.主管, criteria: { type: "role", value: "主管" } },
-            { label: "📋 核心助理", val: metrics.助理, criteria: { type: "role", value: "助理" } },
-            { label: "🛠️ 技术助手", val: metrics.助手, criteria: { type: "role", value: "助手" } },
-            { label: "🎧 客服总长", val: metrics.客服组长, criteria: { type: "role", value: "客服组长" } },
-            { label: "💬 客服专员", val: metrics.客服, criteria: { type: "role", value: "客服" } },
-            { label: "💰 金流总调度", val: metrics.出款组长, criteria: { type: "role", value: "出款组长" } },
-            { label: "💸 出款审核", val: metrics.出款, criteria: { type: "role", value: "出款" } },
-            { label: "🌱 3月内新能体", val: metrics.newbie, criteria: { type: "seniority", range: "newbie" } },
-            { label: "🌗 6月-1年潜能体", val: metrics.mid1, criteria: { type: "seniority", range: "mid1" } },
-            { label: "🌟 1-2年主力矩阵", val: metrics.mid2, criteria: { type: "seniority", range: "mid2" } },
-            { label: "🪐 2年以上核心元老", val: metrics.senior, criteria: { type: "seniority", range: "senior" } },
-        ];
-        
-        const container = document.getElementById('statisticsDashboard');
-        container.innerHTML = cards.map(c => `
-            <div class="stat-hud-card" onclick="applyDashboardMetricFilter(${JSON.stringify(c.criteria).replace(/"/g, '&quot;')})">
-                <div class="stat-hud-num">${c.val}</div>
-                <div class="stat-hud-label">${c.label}</div>
-            </div>
-        `).join('');
-    }
-
-    function applyDashboardMetricFilter(criteria) {
-        currentFilter.statCriteria = criteria;
-        renderHierarchyEngine();
-        document.getElementById('resetFilterBtn').style.display = 'inline-block';
-    }
-
-    /* ====== 核心数据架构多模式渲染引擎 ====== */
-    function renderHierarchyEngine() {
-        let pool = [...globalEmployees];
-        const now = new Date("2026-05-20");
-        
-        // 1. 常规拓扑与检索过滤
-        if(currentFilter.site) pool = pool.filter(e => e['站点'] === currentFilter.site);
-        if(currentFilter.shift && currentFilter.shift !== '全班') pool = pool.filter(e => e['班次'] === currentFilter.shift);
-        if(currentFilter.search) {
-            pool = pool.filter(e => 
-                (e['姓名'] && e['姓名'].toLowerCase().includes(currentFilter.search)) ||
-                (e['工号'] && String(e['工号']).toLowerCase().includes(currentFilter.search))
-            );
+            if (diffDays <= 90) metrics.newbie++;
+            else if (diffDays > 180 && diffDays <= 365) metrics.mid1++;
+            else if (diffDays > 365 && diffDays <= 730) metrics.mid2++;
+            else if (diffDays > 730) metrics.senior++;
         }
-        
-        // 2. 联动数据看板宏观过滤
-        if(currentFilter.statCriteria) {
-            const sc = currentFilter.statCriteria;
-            if(sc.type === 'role') {
-                pool = pool.filter(e => getRoleGroup(e['岗位']) === sc.value);
-            } else if(sc.type === 'seniority') {
-                pool = pool.filter(e => {
-                    if(!e['入职日期']) return false;
-                    const diffDays = Math.ceil(Math.abs(now - new Date(e['入职日期'])) / (1000*60*60*24));
-                    if(sc.range === 'newbie') return diffDays <= 90;
-                    if(sc.range === 'mid1') return diffDays > 180 && diffDays <= 365;
-                    if(sc.range === 'mid2') return diffDays > 365 && diffDays <= 730;
-                    if(sc.range === 'senior') return diffDays > 730;
-                    return true;
-                });
-            }
-        }
-        
-        // 划分职责归类簇
-        const clustered = {主管:[], 助理:[], 助手:[], 客服组长:[], 客服:[], 出款组长:[], 出款:[], 其他:[]};
-        pool.forEach(e => {
-            const g = getRoleGroup(e['岗位']);
-            clustered[g].push(e);
-        });
-        
-        const mainContainer = document.getElementById('hierarchyContainer');
-        mainContainer.innerHTML = '';
-        
-        let dynamicClass = "staff-grid";
-        if(currentLayout === 'list') dynamicClass = "staff-list";
-        if(currentLayout === 'tree') dynamicClass = "staff-tree";
-        
-        roleOrder.forEach(key => {
-            if(clustered[key] && clustered[key].length) {
-                const groupWrapper = document.createElement('div');
-                groupWrapper.className = 'hierarchy-group';
-                groupWrapper.innerHTML = `
-                    <div class="group-label">${roleMap[key]} (${clustered[key].length})</div>
-                    <div class="${dynamicClass}" id="cluster-dom-${key}"></div>
-                `;
-                mainContainer.appendChild(groupWrapper);
-                
-                const gridDom = groupWrapper.querySelector(`#cluster-dom-${key}`);
-                clustered[key].forEach(emp => gridDom.appendChild(generateStaffCardComponent(emp)));
-            }
-        });
-        
-        // 动态变更顶层控制状态标题
-        let stateTitle = currentFilter.site ? `📍 拓扑节点: ${currentFilter.site}` : "🌌 全宇宙总线节点";
-        if(currentFilter.shift) stateTitle += ` · [${currentFilter.shift}]`;
-        if(currentFilter.statCriteria) stateTitle += ` · [数据图表下钻模式]`;
-        document.getElementById('currentViewTitle').innerHTML = stateTitle;
-        
-        renderMetricsDashboard(); // 实时校准看板数值
+    });
+    
+    const cards = [
+        { label: "🌌 总指挥矩阵人员", val: metrics.total, criteria: { type: "all" } },
+        { label: "☀️ A班总人数", val: metrics.shiftA, criteria: { type: "shift", value: "A班" } }, // 【新增】A班卡片
+        { label: "🌙 B班总人数", val: metrics.shiftB, criteria: { type: "shift", value: "B班" } }, // 【新增】B班卡片
+        { label: "👑 主管", val: metrics.主管, criteria: { type: "role", value: "主管" } },
+        { label: "📋 助理", val: metrics.助理, criteria: { type: "role", value: "助理" } },
+        { label: "🛠️ 助手", val: metrics.助手, criteria: { type: "role", value: "助手" } },
+        { label: "🎧 客服组长", val: metrics.客服组长, criteria: { type: "role", value: "客服组长" } },
+        { label: "💬 客服专员", val: metrics.客服, criteria: { type: "role", value: "客服" } },
+        { label: "💰 出款组长", val: metrics.出款组长, criteria: { type: "role", value: "出款组长" } },
+        { label: "💸 出款审核", val: metrics.出款, criteria: { type: "出款" } },
+        { label: "🌱 3月内新能体", val: metrics.newbie, criteria: { type: "seniority", range: "newbie" } },
+        { label: "🌗 6月-1年潜能体", val: metrics.mid1, criteria: { type: "seniority", range: "mid1" } },
+        { label: "🌟 1-2年主力矩阵", val: metrics.mid2, criteria: { type: "seniority", range: "mid2" } },
+        { label: "🪐 2年以上核心元老", val: metrics.senior, criteria: { type: "seniority", range: "senior" } },
+    ];
+    
+    const container = document.getElementById('statisticsDashboard');
+    container.innerHTML = cards.map(c => `
+        <div class="stat-hud-card" onclick="applyDashboardMetricFilter(${JSON.stringify(c.criteria).replace(/"/g, '&quot;')})">
+            <div class="stat-hud-num">${c.val}</div>
+            <div class="stat-hud-label">${c.label}</div>
+        </div>
+    `).join('');
+}
+
+/* ====== 核心数据架构多模式渲染引擎（已适配A/B班卡片点击下钻） ====== */
+function renderHierarchyEngine() {
+    let pool = [...globalEmployees];
+    const now = new Date("2026-05-20");
+    
+    // 1. 常规拓扑与检索过滤
+    if(currentFilter.site) pool = pool.filter(e => e['站点'] === currentFilter.site);
+    if(currentFilter.shift && currentFilter.shift !== '全班') pool = pool.filter(e => e['班次'] === currentFilter.shift);
+    if(currentFilter.search) {
+        pool = pool.filter(e => 
+            (e['姓名'] && e['姓名'].toLowerCase().includes(currentFilter.search)) ||
+            (e['工号'] && String(e['工号']).toLowerCase().includes(currentFilter.search))
+        );
     }
+    
+    // 2. 联动数据看板宏观过滤
+    if(currentFilter.statCriteria) {
+        const sc = currentFilter.statCriteria;
+        if(sc.type === 'role') {
+            pool = pool.filter(e => getRoleGroup(e['岗位']) === sc.value);
+        } else if(sc.type === 'shift') { // 【新增】支持点击看板卡片时按班次下钻过滤
+            pool = pool.filter(e => e['班次'] === sc.value);
+        } else if(sc.type === 'seniority') {
+            pool = pool.filter(e => {
+                if(!e['入职日期']) return false;
+                const diffDays = Math.ceil(Math.abs(now - new Date(e['入职日期'])) / (1000*60*60*24));
+                if(sc.range === 'newbie') return diffDays <= 90;
+                if(sc.range === 'mid1') return diffDays > 180 && diffDays <= 365;
+                if(sc.range === 'mid2') return diffDays > 365 && diffDays <= 730;
+                if(sc.range === 'senior') return diffDays > 730;
+                return true;
+            });
+        }
+    }
+    
+    // 划分职责归类簇
+    const clustered = {主管:[], 助理:[], 助手:[], 客服组长:[], 客服:[], 出款组长:[], 出款:[], 其他:[]};
+    pool.forEach(e => {
+        const g = getRoleGroup(e['岗位']);
+        clustered[g].push(e);
+    });
+    
+    const mainContainer = document.getElementById('hierarchyContainer');
+    mainContainer.innerHTML = '';
+    
+    let dynamicClass = "staff-grid";
+    if(currentLayout === 'list') dynamicClass = "staff-list";
+    if(currentLayout === 'tree') dynamicClass = "staff-tree";
+    
+    roleOrder.forEach(key => {
+        if(clustered[key] && clustered[key].length) {
+            const groupWrapper = document.createElement('div');
+            groupWrapper.className = 'hierarchy-group';
+            groupWrapper.innerHTML = `
+                <div class="group-label">${roleMap[key]} (${clustered[key].length})</div>
+                <div class="${dynamicClass}" id="cluster-dom-${key}"></div>
+            `;
+            mainContainer.appendChild(groupWrapper);
+            
+            const gridDom = groupWrapper.querySelector(`#cluster-dom-${key}`);
+            clustered[key].forEach(emp => gridDom.appendChild(generateStaffCardComponent(emp)));
+        }
+    });
+    
+    // 动态变更顶层控制状态标题
+    let stateTitle = currentFilter.site ? `📍 拓扑节点: ${currentFilter.site}` : "🌌 全宇宙总线节点";
+    if(currentFilter.shift) stateTitle += ` · [${currentFilter.shift}]`;
+    if(currentFilter.statCriteria) {
+        if(currentFilter.statCriteria.type === 'shift') stateTitle += ` · [看板下钻: ${currentFilter.statCriteria.value}]`;
+        else stateTitle += ` · [数据图表下钻模式]`;
+    }
+    document.getElementById('currentViewTitle').innerHTML = stateTitle;
+    
+    renderMetricsDashboard(); // 实时校准看板数值
+}
     
     function generateStaffCardComponent(emp) {
         const card = document.createElement('div');
@@ -706,7 +719,7 @@
         modal.innerHTML = `
             <div class="holo-dialog dynamic-border" style="animation: borderPulse 3s infinite alternate;">
                 <h3 style="color:var(--primary-glow); margin-bottom:20px; border-bottom: 1px dashed var(--border-aura); padding-bottom:12px;">
-                    🧬 矩阵元数据 · ${emp['姓名']} 全息控制档案
+                    🧬 矩阵元数据 · ${emp['姓名']} 
                 </h3>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom: 25px;">
                     <div><div class="stat-label">工号 (量子标记)</div><div class="stat-value-text">${emp['工号']||'-'}</div></div>
