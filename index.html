@@ -544,7 +544,7 @@
         renderHierarchyEngine();
     }
 
-/* ====== 数据分析可视化仪表盘综合计算引擎（已修复语法） ====== */
+/* ====== 数据分析可视化仪表盘综合计算引擎 ====== */
 function renderMetricsDashboard() {
     const now = new Date("2026-05-20");
     let metrics = {
@@ -594,7 +594,6 @@ function renderMetricsDashboard() {
     cards.forEach(c => {
         const div = document.createElement('div');
         div.className = 'stat-hud-card';
-        // 使用单引号包裹传参，避免引号冲突
         div.onclick = function() { applyDashboardMetricFilter(c.criteria); };
         div.innerHTML = `
             <div class="stat-hud-num">${c.val}</div>
@@ -604,7 +603,15 @@ function renderMetricsDashboard() {
     });
 }
 
-/* ====== 核心数据架构多模式渲染引擎（已修复多重条件过滤冲突） ====== */
+/* ====== 修复增补：数据看板点击过滤执行函数 ====== */
+function applyDashboardMetricFilter(criteria) {
+    currentFilter.statCriteria = criteria;
+    // 如果是全站总览，或者想不受干扰地看特定数据，可以考虑在这里重置普通搜索状态
+    renderHierarchyEngine();
+    document.getElementById('resetFilterBtn').style.display = 'inline-block';
+}
+
+/* ====== 核心数据架构多模式渲染引擎 ====== */
 function renderHierarchyEngine() {
     // 【核心修复】如果看板点击的是班次下钻，直接将其智能同步给全局班次过滤状态，防止条件死锁导致名单变空
     if (currentFilter.statCriteria && currentFilter.statCriteria.type === 'shift') {
