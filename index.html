@@ -544,30 +544,26 @@
         renderHierarchyEngine();
     }
 
-   /* ====== 数据分析可视化仪表盘综合计算引擎（已修复引号截断隐患） ====== */
+/* ====== 数据分析可视化仪表盘综合计算引擎（已修复语法） ====== */
 function renderMetricsDashboard() {
-    const now = new Date("2026-05-20"); // 设定运行沙盒参照基准时空
+    const now = new Date("2026-05-20");
     let metrics = {
         total: 0, 主管: 0, 助理: 0, 助手: 0, 客服组长: 0, 客服: 0, 出款组长: 0, 出款: 0,
         newbie: 0, mid1: 0, mid2: 0, senior: 0,
-        shiftA: 0, shiftB: 0 // A/B班计数器
+        shiftA: 0, shiftB: 0
     };
     
     globalEmployees.forEach(e => {
         metrics.total++;
         const g = getRoleGroup(e['岗位']);
         if (metrics[g] !== undefined) metrics[g]++;
-        
-        // 扫描员工班次
         if (e['班次'] === 'A班') metrics.shiftA++;
         if (e['班次'] === 'B班') metrics.shiftB++;
         
-        // 服务资历多维计算
         if (e['入职日期']) {
             const hireDate = new Date(e['入职日期']);
             const diffTime = Math.abs(now - hireDate);
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            
             if (diffDays <= 90) metrics.newbie++;
             else if (diffDays > 180 && diffDays <= 365) metrics.mid1++;
             else if (diffDays > 365 && diffDays <= 730) metrics.mid2++;
@@ -577,8 +573,8 @@ function renderMetricsDashboard() {
     
     const cards = [
         { label: "🌌 总指挥矩阵人员", val: metrics.total, criteria: { type: "all" } },
-        { label: "☀️ A班总人数", val: metrics.shiftA, criteria: { type: "shift", value: "A班" } }, 
-        { label: "🌙 B班总人数", val: metrics.shiftB, criteria: { type: "shift", value: "B班" } }, 
+        { label: "☀️ A班总人数", val: metrics.shiftA, criteria: { type: "shift", value: "A班" } },
+        { label: "🌙 B班总人数", val: metrics.shiftB, criteria: { type: "shift", value: "B班" } },
         { label: "👑 主管", val: metrics.主管, criteria: { type: "role", value: "主管" } },
         { label: "📋 助理", val: metrics.助理, criteria: { type: "role", value: "助理" } },
         { label: "🛠️ 助手", val: metrics.助手, criteria: { type: "role", value: "助手" } },
@@ -589,27 +585,24 @@ function renderMetricsDashboard() {
         { label: "🌱 3月内新能体", val: metrics.newbie, criteria: { type: "seniority", range: "newbie" } },
         { label: "🌗 6月-1年潜能体", val: metrics.mid1, criteria: { type: "seniority", range: "mid1" } },
         { label: "🌟 1-2年主力矩阵", val: metrics.mid2, criteria: { type: "seniority", range: "mid2" } },
-        { label: "🪐 2年以上核心元老", val: metrics.senior, criteria: { type: "seniority", range: "senior" } },
+        { label: "🪐 2年以上核心元老", val: metrics.senior, criteria: { type: "seniority", range: "senior" } }
     ];
     
     const container = document.getElementById('statisticsDashboard');
- // 修正后的代码段
-const container = document.getElementById('statisticsDashboard');
-container.innerHTML = ''; // 清空旧内容
-
-cards.forEach(c => {
-    const card = document.createElement('div');
-    card.className = 'stat-hud-card';
-    // 将对象转为 JSON 字符串并进行 URI 编码，避免引号冲突
-    const criteriaStr = encodeURIComponent(JSON.stringify(c.criteria));
-    card.setAttribute('onclick', `applyDashboardMetricFilter(JSON.parse(decodeURIComponent('${criteriaStr}')) )`);
+    container.innerHTML = ''; // 清空内容
     
-    card.innerHTML = `
-        <div class="stat-hud-num">${c.val}</div>
-        <div class="stat-hud-label">${c.label}</div>
-    `;
-    container.appendChild(card);
-});
+    cards.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'stat-hud-card';
+        // 使用单引号包裹传参，避免引号冲突
+        div.onclick = function() { applyDashboardMetricFilter(c.criteria); };
+        div.innerHTML = `
+            <div class="stat-hud-num">${c.val}</div>
+            <div class="stat-hud-label">${c.label}</div>
+        `;
+        container.appendChild(div);
+    });
+}
 
 /* ====== 核心数据架构多模式渲染引擎（已修复多重条件过滤冲突） ====== */
 function renderHierarchyEngine() {
