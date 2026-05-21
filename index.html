@@ -185,7 +185,7 @@
         
         .holo-dialog { background: var(--modal-bg); border-radius: 12px; padding: 30px; position: relative; height: 100%; width: 100%; }
         
-        /* ====== 新增：高清大头像极光圆环包裹器 ====== */
+        /* ====== 高清大头像极光圆环包裹器 ====== */
         .hd-avatar-wrapper {
             position: relative;
             padding: 4px; /* 滚动光圈厚度 */
@@ -504,7 +504,6 @@
                 currentUserNickname = data.nickname || "未知特工";
                 currentRole = data.role || "Viewer";
                 
-                // 写入本地持久化存储
                 localStorage.setItem('matrix_os_session', JSON.stringify({
                     email: currentUserEmail,
                     nickname: currentUserNickname,
@@ -565,7 +564,10 @@
     /* ====== 排序与拓扑站点 ====== */
     function renderSiteSidebarMenu() {
         const container = document.getElementById('siteNavigationList');
+        
+        // 【新增逻辑】：精确移除 'sites' 和 'admins' 错误数据
         let mergedSites = [...new Set([...configSites, ...globalEmployees.map(e=>e['站点']).filter(Boolean)])];
+        mergedSites = mergedSites.filter(site => site !== 'sites' && site !== 'admins');
         
         mergedSites.sort((a, b) => {
             let idxA = REQUIRED_SITE_ORDER.indexOf(a);
@@ -731,6 +733,23 @@
                 });
             }
         }
+        
+        // 【新增逻辑】：在分类展示前，将数据池内的所有员工按照指定的站点顺序进行全局排序
+        pool.sort((a, b) => {
+            let siteA = a['站点'] || '';
+            let siteB = b['站点'] || '';
+            let idxA = REQUIRED_SITE_ORDER.indexOf(siteA);
+            let idxB = REQUIRED_SITE_ORDER.indexOf(siteB);
+            
+            // 如果是未在规定列表内的新站点，则排在最后，并按字母排序
+            if(idxA === -1) idxA = 9999;
+            if(idxB === -1) idxB = 9999;
+            
+            if(idxA !== idxB) {
+                return idxA - idxB;
+            }
+            return siteA.localeCompare(siteB);
+        });
         
         const clustered = {主管:[], 助理:[], 助手:[], 客服组长:[], 客服:[], 出款组长:[], 出款:[], 其他:[]};
         pool.forEach(e => { clustered[getRoleGroup(e['岗位'])].push(e); });
@@ -935,7 +954,7 @@
 
     /* ====== 头像弹窗与登出逻辑 ====== */
     function showHDAvatar(e) {
-        e.stopPropagation(); // 阻止触发下方的打开档案事件
+        e.stopPropagation();
         const src = document.getElementById('userAvatarIcon').src;
         document.getElementById('hdAvatarImage').src = src;
         document.getElementById('hdAvatarOverlay').style.display = 'flex';
@@ -966,7 +985,6 @@
                     currentUserNickname = nick;
                     document.getElementById('userNicknameDisplay').innerText = `👋 ${currentUserNickname}`;
                     
-                    // 更新持久化缓存里的昵称
                     let sessionStr = localStorage.getItem('matrix_os_session');
                     if(sessionStr) {
                         let session = JSON.parse(sessionStr);
@@ -987,7 +1005,7 @@
     
     function logoutSession() { 
         secureConfirm("⚡ 安全注销", "确认切断连接并清空本地密钥吗？", () => { 
-            localStorage.removeItem('matrix_os_session'); // 清除持久化缓存
+            localStorage.removeItem('matrix_os_session'); 
             window.location.reload(); 
         }); 
     }
