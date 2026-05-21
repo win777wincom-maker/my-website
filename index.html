@@ -57,7 +57,7 @@
             transition: background 0.5s, color 0.5s; 
         }
         
-        /* 多色彩流体全息极光引擎 (支持深浅主题自适应) */
+        /* 多色彩流体全息极光引擎 (深浅主题自适应均保持不变) */
         .aurora-field { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; 
             background: radial-gradient(circle at 15% 50%, var(--aurora-1), transparent 40%),
@@ -89,7 +89,7 @@
             100% { border-color: var(--primary-glow); box-shadow: 0 0 20px var(--border-aura); }
         }
 
-        /* 滚动条视效强化 */
+       /* 滚动条视效强化 */
         ::-webkit-scrollbar { width: 6px; height: 6px; } 
         ::-webkit-scrollbar-track { background: transparent; } 
         ::-webkit-scrollbar-thumb { background: var(--primary-glow); border-radius: 4px; }
@@ -167,10 +167,10 @@
         /* ====== 科幻级弹窗特效系统 ====== */
         .holo-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(1, 3, 10, 0.85); backdrop-filter: blur(10px); z-index: 2000; display: none; justify-content: center; align-items: center; }
         
-        /* 转圈极光实线边界包裹器 */
+        /* 弹窗极光多彩边框实线滚动包裹器 */
         .holo-scifi-wrapper {
             position: relative;
-            padding: 2px; /* 极光边框厚度 */
+            padding: 2px; /* 极光边框厚度 (实线) */
             border-radius: 14px;
             background: linear-gradient(90deg, var(--primary-glow), var(--danger-neon), var(--success-glow), var(--primary-glow));
             background-size: 300% 300%;
@@ -185,24 +185,25 @@
         
         .holo-dialog { background: var(--modal-bg); border-radius: 12px; padding: 30px; position: relative; height: 100%; width: 100%; }
         
-        /* 高清放大头像专属极光光环 */
-        .avatar-scifi-ring {
+        /* ====== 新增：高清大头像极光圆环包裹器 ====== */
+        .hd-avatar-wrapper {
             position: relative;
-            padding: 6px; /* 极粗炫彩实线厚度 */
+            padding: 4px; /* 滚动光圈厚度 */
             border-radius: 50%;
-            background: linear-gradient(90deg, var(--primary-glow), var(--danger-neon), var(--success-glow), var(--aurora-4), var(--primary-glow));
+            background: linear-gradient(90deg, var(--primary-glow), var(--danger-neon), var(--success-glow), var(--primary-glow));
             background-size: 300% 300%;
-            animation: scifiBorderSpin 2.5s linear infinite;
-            box-shadow: 0 0 60px rgba(0, 240, 255, 0.5);
-            display: flex; justify-content: center; align-items: center;
+            animation: scifiBorderSpin 3s linear infinite;
+            box-shadow: 0 0 50px rgba(0, 240, 255, 0.6);
+            display: inline-block;
         }
-        .avatar-scifi-ring img {
-            width: 320px; 
-            height: 320px; 
-            border-radius: 50%; 
-            object-fit: cover; 
+        .hd-avatar-img {
+            display: block;
+            width: 350px;
+            height: 350px;
+            border-radius: 50%;
+            object-fit: cover;
             background: var(--bg-deep);
-            border: 4px solid var(--bg-deep);
+            border: 4px solid var(--bg-deep); /* 内层实线边框隔离图像与光效 */
         }
 
         .stat-label { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 4px; }
@@ -217,7 +218,6 @@
         
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; max-height: 70vh; overflow-y: auto; padding: 5px; }
         .setting-group { margin-bottom: 22px; border-bottom: 1px dashed var(--border-aura); padding-bottom: 18px; }
-        .color-row { display: flex; align-items: center; justify-content: space-between; margin: 12px 0; }
     </style>
 </head>
 <body>
@@ -234,12 +234,6 @@
                 <button class="tech-btn" id="verifyLoginBtn" style="margin-top:10px;">接入全息控制中枢</button>
             </div>
         </div>
-    </div>
-</div>
-
-<div id="avatarZoomOverlay" class="holo-overlay" style="z-index: 6000;" onclick="this.style.display='none'">
-    <div class="avatar-scifi-ring">
-        <img id="largeAvatarImg" src="">
     </div>
 </div>
 
@@ -300,6 +294,12 @@
     </div>
 </div>
 
+<div id="hdAvatarOverlay" class="holo-overlay" style="z-index: 6000;" onclick="closeOverlay('hdAvatarOverlay')">
+    <div class="hd-avatar-wrapper" onclick="event.stopPropagation()">
+        <img id="hdAvatarImage" class="hd-avatar-img" src="">
+    </div>
+</div>
+
 <header class="glass-header dynamic-border">
     <div class="logo-area">
         <button class="hud-btn" onclick="togglePanel('leftPanel')">◧ 矩阵站点</button>
@@ -315,9 +315,9 @@
         <button class="hud-btn" id="navAllStaffBtn">🌌 全站总览</button>
         <button class="hud-btn" onclick="togglePanel('rightPanel')">控制台录入 ◨</button>
         
-        <div style="display:flex; align-items:center; gap:8px; padding-left:10px;">
-            <img id="userAvatarIcon" onclick="showLargeAvatar(event)" src="https://api.dicebear.com/7.x/bottts/svg?seed=matrix" style="width:32px; height:32px; border-radius:50%; border: 2px solid var(--primary-glow); object-fit: cover; cursor:pointer;" title="点击查看高清全息化身">
-            <span id="userNicknameDisplay" onclick="openProfileView()" style="font-weight:bold; color:var(--primary-glow); cursor:pointer;" title="点击进入全息特工档案">未连接</span>
+        <div style="display:flex; align-items:center; gap:8px; cursor:pointer; padding-left:10px;">
+            <img id="userAvatarIcon" src="https://api.dicebear.com/7.x/bottts/svg?seed=matrix" style="width:32px; height:32px; border-radius:50%; border: 2px solid var(--primary-glow); object-fit: cover;" onclick="showHDAvatar(event)" title="点击查看高清特工投影">
+            <span id="userNicknameDisplay" style="font-weight:bold; color:var(--primary-glow);" onclick="openProfileView()" title="点击进入全息特工档案">未连接</span>
         </div>
         
         <span class="gear-btn" onclick="openSettingsPanel()">⚙️</span>
@@ -385,7 +385,7 @@
 </div>
 
 <script>
-    // ⚠️ 你的后端 Apps Script 地址 (0 更改，因为缓存放在浏览器本地)
+    // ⚠️ 你的后端 Apps Script 地址
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzgK-T0ae8cr9zjmhjegqLgTe4RlNy086tVd7iw_CdABYtXTJj7XvirvwpEtJ-XPL1O/exec";
 
     let globalEmployees = [];
@@ -395,21 +395,33 @@
     let currentUserEmail = "";
     let currentUserNickname = "";
     
-    // 量子预加载系统（静默后台拉取）
+    // 量子预加载系统
     let preloadPromise = Promise.all([
         fetch(`${SCRIPT_URL}?action=getEmployees`).then(r => r.json()).catch(()=>[]),
         fetch(`${SCRIPT_URL}?action=getConfig`).then(r => r.json()).catch(()=>({sites:[], admins:[]}))
     ]);
     
-    // ======== 持久化登录：自动拦截鉴权 ========
+    let currentFilter = { site: null, shift: null, search: "", statCriteria: null };
+    let currentLayout = "grid"; 
+    
+    const roleOrder = ["主管", "助理", "助手", "客服组长", "客服", "出款组长", "出款", "其他"];
+    const roleMap = {
+        "主管": "👑 主管层", "助理": "📋 助理层", "助手": "🛠️ 全息技术助手",
+        "客服组长": "🎧 客服组长", "客服": "💬 客服专员", "出款组长": "💰 金流出款总调度", 
+        "出款": "💸 出款审核", "其他": "🔮 边缘扩展序列"
+    };
+    
+    const REQUIRED_SITE_ORDER = ["777win", "888HOT", "bet3333", "555win", "888TO", "11UU", "BET55"];
+
+    /* ====== 保持登录生命周期管理 ====== */
     window.addEventListener('DOMContentLoaded', async () => {
-        const session = localStorage.getItem('matrix_os_session');
-        if(session) {
+        const sessionStr = localStorage.getItem('matrix_os_session');
+        if (sessionStr) {
             try {
-                const data = JSON.parse(session);
-                currentUserEmail = data.email;
-                currentUserNickname = data.nickname;
-                currentRole = data.role;
+                const session = JSON.parse(sessionStr);
+                currentUserEmail = session.email;
+                currentUserNickname = session.nickname;
+                currentRole = session.role;
                 
                 document.getElementById('userNicknameDisplay').innerText = `👋 ${currentUserNickname}`;
                 document.getElementById('loginOverlay').style.display = 'none';
@@ -435,21 +447,11 @@
                 } else {
                     await synchronizeCoreData(); 
                 }
-            } catch(e) { console.error("会话复原失败", e); }
+            } catch(e) {
+                localStorage.removeItem('matrix_os_session');
+            }
         }
     });
-
-    let currentFilter = { site: null, shift: null, search: "", statCriteria: null };
-    let currentLayout = "grid"; 
-    
-    const roleOrder = ["主管", "助理", "助手", "客服组长", "客服", "出款组长", "出款", "其他"];
-    const roleMap = {
-        "主管": "👑 主管层", "助理": "📋 助理层", "助手": "🛠️ 全息技术助手",
-        "客服组长": "🎧 客服组长", "客服": "💬 客服专员", "出款组长": "💰 金流出款总调度", 
-        "出款": "💸 出款审核", "其他": "🔮 边缘扩展序列"
-    };
-    
-    const REQUIRED_SITE_ORDER = ["777win", "888HOT", "bet3333", "555win", "888TO", "11UU", "BET55"];
 
     function getRoleGroup(role) {
         if (!role) return "其他";
@@ -484,14 +486,6 @@
             document.getElementById('userAvatarIcon').src = `https://api.dicebear.com/7.x/bottts/svg?seed=${currentUserEmail}`;
         }
     }
-    
-    // 全新：激活高清极光大屏头像
-    function showLargeAvatar(e) {
-        e.stopPropagation();
-        const currentSrc = document.getElementById('userAvatarIcon').src;
-        document.getElementById('largeAvatarImg').src = currentSrc;
-        document.getElementById('avatarZoomOverlay').style.display = 'flex';
-    }
 
     /* ====== 登录与同步体系 ====== */
     document.getElementById('verifyLoginBtn').onclick = async () => {
@@ -510,9 +504,11 @@
                 currentUserNickname = data.nickname || "未知特工";
                 currentRole = data.role || "Viewer";
                 
-                // 本地化记录 Session 凭证，防止刷新掉线
+                // 写入本地持久化存储
                 localStorage.setItem('matrix_os_session', JSON.stringify({
-                    email: currentUserEmail, nickname: currentUserNickname, role: currentRole
+                    email: currentUserEmail,
+                    nickname: currentUserNickname,
+                    role: currentRole
                 }));
                 
                 document.getElementById('userNicknameDisplay').innerText = `👋 ${currentUserNickname}`;
@@ -537,7 +533,7 @@
                     renderMetricsDashboard();
                     renderHierarchyEngine();
                 } else {
-                    await synchronizeCoreData(); 
+                    await synchronizeCoreData();
                 }
             } else { 
                 alert(`🔒 拦截响应: ${data.msg}`); 
@@ -570,12 +566,6 @@
     function renderSiteSidebarMenu() {
         const container = document.getElementById('siteNavigationList');
         let mergedSites = [...new Set([...configSites, ...globalEmployees.map(e=>e['站点']).filter(Boolean)])];
-        
-        // 【核心修复】强制剥离左侧边栏可能混入的 “sites” 和 “admins” 字符串信息，纯净展示站点
-        mergedSites = mergedSites.filter(s => {
-            const ls = String(s).toLowerCase();
-            return ls !== 'sites' && ls !== 'admins';
-        });
         
         mergedSites.sort((a, b) => {
             let idxA = REQUIRED_SITE_ORDER.indexOf(a);
@@ -617,4 +607,399 @@
         currentFilter.shift = shift;
         currentFilter.statCriteria = null;
         renderHierarchyEngine();
-        document.getElementById('resetFilterBtn').style.display
+        document.getElementById('resetFilterBtn').style.display = 'inline-block';
+    }
+    
+    function resetGlobalFilters() {
+        currentFilter = { site: null, shift: null, search: "", statCriteria: null };
+        document.getElementById('searchInput').value = "";
+        renderHierarchyEngine();
+        document.getElementById('resetFilterBtn').style.display = 'none';
+        document.querySelectorAll('.site-shifts').forEach(s => s.classList.remove('active'));
+    }
+
+    function handleSearchEngine() {
+        currentFilter.search = document.getElementById('searchInput').value.trim().toLowerCase();
+        renderHierarchyEngine();
+        document.getElementById('resetFilterBtn').style.display = currentFilter.search ? 'inline-block' : 'none';
+    }
+
+    function cycleViewLayout() {
+        if(currentLayout === 'grid') currentLayout = 'pyramid';
+        else if(currentLayout === 'pyramid') currentLayout = 'tree';
+        else currentLayout = 'grid';
+        renderHierarchyEngine();
+    }
+
+    /* ====== 看板系统 ====== */
+    function renderMetricsDashboard() {
+        const now = new Date("2026-05-20");
+        let metrics = {
+            total: 0, 主管: 0, 助理: 0, 助手: 0, 客服组长: 0, 客服: 0, 出款组长: 0, 出款: 0,
+            newbie: 0, mid1: 0, mid2: 0, senior: 0,
+            shiftA: 0, shiftB: 0
+        };
+        
+        globalEmployees.forEach(e => {
+            metrics.total++;
+            const g = getRoleGroup(e['岗位']);
+            if (metrics[g] !== undefined) metrics[g]++; 
+            
+            if (e['班次'] === 'A班') metrics.shiftA++;
+            if (e['班次'] === 'B班') metrics.shiftB++;
+            
+            if (e['入职日期']) {
+                const hireDate = new Date(e['入职日期']);
+                const diffTime = Math.abs(now - hireDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                if (diffDays <= 90) metrics.newbie++;
+                else if (diffDays > 180 && diffDays <= 365) metrics.mid1++;
+                else if (diffDays > 365 && diffDays <= 730) metrics.mid2++;
+                else if (diffDays > 730) metrics.senior++;
+            }
+        });
+        
+        const cards = [
+            { label: "🌌 总指挥矩阵", val: metrics.total, criteria: { type: "all" } },
+            { label: "☀️ A班人数", val: metrics.shiftA, criteria: { type: "shift", value: "A班" } },
+            { label: "🌙 B班人数", val: metrics.shiftB, criteria: { type: "shift", value: "B班" } },
+            { label: "👑 主管", val: metrics.主管, criteria: { type: "role", value: "主管" } },
+            { label: "📋 助理", val: metrics.助理, criteria: { type: "role", value: "助理" } },
+            { label: "🛠️ 助手", val: metrics.助手, criteria: { type: "role", value: "助手" } },
+            { label: "🎧 客服组长", val: metrics.客服组长, criteria: { type: "role", value: "客服组长" } },
+            { label: "💬 客服专员", val: metrics.客服, criteria: { type: "role", value: "客服" } },
+            { label: "💰 出款组长", val: metrics.出款组长, criteria: { type: "role", value: "出款组长" } },
+            { label: "💸 出款审核", val: metrics.出款, criteria: { type: "role", value: "出款" } },
+            { label: "🌱 3月内新能", val: metrics.newbie, criteria: { type: "seniority", range: "newbie" } },
+            { label: "🌗 6月-1年", val: metrics.mid1, criteria: { type: "seniority", range: "mid1" } },
+            { label: "🌟 1-2年核心", val: metrics.mid2, criteria: { type: "seniority", range: "mid2" } },
+            { label: "🪐 2年以上元老", val: metrics.senior, criteria: { type: "seniority", range: "senior" } }
+        ];
+        
+        const container = document.getElementById('statisticsDashboard');
+        container.innerHTML = ''; 
+        
+        cards.forEach(c => {
+            const div = document.createElement('div');
+            div.className = 'stat-hud-card dynamic-border';
+            div.onclick = function() { applyDashboardMetricFilter(c.criteria); };
+            div.innerHTML = `<div class="stat-hud-num">${c.val}</div><div class="stat-hud-label">${c.label}</div>`;
+            container.appendChild(div);
+        });
+    }
+
+    function applyDashboardMetricFilter(criteria) {
+        currentFilter.statCriteria = criteria;
+        renderHierarchyEngine();
+        document.getElementById('resetFilterBtn').style.display = 'inline-block';
+    }
+
+    /* ====== 核心渲染引擎 ====== */
+    function renderHierarchyEngine() {
+        if (currentFilter.statCriteria && currentFilter.statCriteria.type === 'shift') {
+            currentFilter.shift = currentFilter.statCriteria.value;
+        }
+        if (currentFilter.statCriteria && currentFilter.statCriteria.type === 'all') {
+            currentFilter.shift = null;
+        }
+
+        let pool = [...globalEmployees];
+        const now = new Date("2026-05-20");
+        
+        if(currentFilter.site) pool = pool.filter(e => e['站点'] === currentFilter.site);
+        if(currentFilter.shift && currentFilter.shift !== '全班') pool = pool.filter(e => e['班次'] === currentFilter.shift);
+        if(currentFilter.search) {
+            pool = pool.filter(e => 
+                (e['姓名'] && e['姓名'].toLowerCase().includes(currentFilter.search)) ||
+                (e['工号'] && String(e['工号']).toLowerCase().includes(currentFilter.search))
+            );
+        }
+        
+        if(currentFilter.statCriteria) {
+            const sc = currentFilter.statCriteria;
+            if(sc.type === 'role') {
+                pool = pool.filter(e => getRoleGroup(e['岗位']) === sc.value);
+            } else if(sc.type === 'seniority') {
+                pool = pool.filter(e => {
+                    if(!e['入职日期']) return false;
+                    const diffDays = Math.ceil(Math.abs(now - new Date(e['入职日期'])) / (1000*60*60*24));
+                    if(sc.range === 'newbie') return diffDays <= 90;
+                    if(sc.range === 'mid1') return diffDays > 180 && diffDays <= 365;
+                    if(sc.range === 'mid2') return diffDays > 365 && diffDays <= 730;
+                    if(sc.range === 'senior') return diffDays > 730;
+                    return true;
+                });
+            }
+        }
+        
+        const clustered = {主管:[], 助理:[], 助手:[], 客服组长:[], 客服:[], 出款组长:[], 出款:[], 其他:[]};
+        pool.forEach(e => { clustered[getRoleGroup(e['岗位'])].push(e); });
+        
+        const mainContainer = document.getElementById('hierarchyContainer');
+        mainContainer.innerHTML = '';
+        
+        let dynamicClass = "staff-grid";
+        if(currentLayout === 'pyramid') dynamicClass = "staff-pyramid";
+        if(currentLayout === 'tree') dynamicClass = "staff-tree";
+        
+        roleOrder.forEach(key => {
+            if(clustered[key] && clustered[key].length) {
+                const groupWrapper = document.createElement('div');
+                groupWrapper.className = 'hierarchy-group';
+                
+                if(currentLayout === 'pyramid') {
+                    groupWrapper.style.display = 'flex';
+                    groupWrapper.style.flexDirection = 'column';
+                    groupWrapper.style.alignItems = 'center';
+                }
+                
+                groupWrapper.innerHTML = `
+                    <div class="group-label">${roleMap[key]} (${clustered[key].length})</div>
+                    <div class="${dynamicClass}" id="cluster-dom-${key}"></div>
+                `;
+                mainContainer.appendChild(groupWrapper);
+                
+                const gridDom = groupWrapper.querySelector(`#cluster-dom-${key}`);
+                clustered[key].forEach(emp => gridDom.appendChild(generateStaffCardComponent(emp)));
+            }
+        });
+        
+        let stateTitle = currentFilter.site ? `📍 拓扑节点: ${currentFilter.site}` : "🌌 全宇宙总线节点";
+        if(currentFilter.shift) stateTitle += ` · [${currentFilter.shift}]`;
+        document.getElementById('currentViewTitle').innerHTML = stateTitle;
+        
+        renderMetricsDashboard(); 
+    }
+    
+    function generateStaffCardComponent(emp) {
+        const card = document.createElement('div');
+        card.className = `staff-card dynamic-border ${currentLayout}-mode`;
+        card.onclick = () => revealEmployeeFullHoloProfile(emp);
+        
+        const tgDisplay = emp['工作TG'] ? String(emp['工作TG']) : '-';
+        card.innerHTML = `
+            <div class="card-site"><span>${emp['站点']||'未部署'}</span><span>${emp['班次']||'无班次'}</span></div>
+            <div class="staff-name"><span>${emp['姓名']||'未知'}</span><small style="color:var(--text-dim);font-size:0.8rem;font-family:monospace;">#${emp['工号']||''}</small></div>
+            <div class="staff-role">${emp['岗位']||'常规序列'}</div>
+            <div class="staff-meta"><span>📅 ${emp['入职日期']||'-'}</span><span style="color:var(--success-glow); font-family:monospace;">${tgDisplay}</span></div>
+        `;
+        return card;
+    }
+
+    function revealEmployeeFullHoloProfile(emp) {
+        const modal = document.createElement('div');
+        modal.id = 'profileHoloModal';
+        modal.className = 'holo-overlay';
+        modal.style.display = 'flex';
+        modal.onclick = (e) => { if(e.target === modal) { modal.remove(); } };
+        
+        modal.innerHTML = `
+            <div class="holo-scifi-wrapper" style="width: 654px;">
+                <div class="holo-dialog">
+                    <h3 style="color:var(--primary-glow); margin-bottom:20px; border-bottom: 1px dashed var(--border-aura); padding-bottom:12px;">
+                        🧬 矩阵元数据 · ${emp['姓名']} 
+                    </h3>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom: 25px;">
+                        <div><div class="stat-label">工号 (量子标记)</div><div class="stat-value-text">${emp['工号']||'-'}</div></div>
+                        <div><div class="stat-label">当前职责 / 级阶</div><div class="stat-value-text">${emp['岗位']||'-'} / ${emp['等级']||'-'}</div></div>
+                        <div><div class="stat-label">部署站点 / 运营时序</div><div class="stat-value-text">${emp['站点']||'-'} / ${emp['班次']||'-'}</div></div>
+                        <div><div class="stat-label">直属最高长官工号</div><div class="stat-value-text">${emp['上司工号']||'-'}</div></div>
+                        <div><div class="stat-label">量子回归线 (入职日期)</div><div class="stat-value-text">${emp['入职日期']||'-'}</div></div>
+                        <div><div class="stat-label">宇宙恒星时 (出生日期)</div><div class="stat-value-text">${emp['出生日期']||'-'}</div></div>
+                        <div><div class="stat-label">国籍归属</div><div class="stat-value-text">${emp['国籍']||'-'}</div></div>
+                        <div><div class="stat-label">定位空间 / 实相地址</div><div class="stat-value-text">${emp['办公室号']||'-'} / ${emp['办公地点']||'-'}</div></div>
+                        <div><div class="stat-label">电子网络邮箱</div><div class="stat-value-text">${emp['邮箱']||'-'}</div></div>
+                        <div><div class="stat-label">战术加密 TG</div><div class="stat-value-text" style="color:var(--success-glow); font-family:monospace;">${emp['工作TG']||'-'}</div></div>
+                        <div><div class="stat-label">私人非对称加密 TG</div><div class="stat-value-text" style="color:var(--text-dim); font-family:monospace;">${emp['私人TG']||'-'}</div></div>
+                        <div style="grid-column:1/-1;"><div class="stat-label">中枢备注快照</div><div class="stat-value-text" style="white-space:pre-wrap;">${emp['备注']||'无额外快照信息'}</div></div>
+                    </div>
+                    <div style="display:flex; gap:12px; justify-content:flex-end; border-top:1px dashed var(--border-aura); padding-top:15px;">
+                        ${currentRole === 'Admin' ? `<button class="tech-btn" style="border-color:var(--danger-neon); color:var(--danger-neon);" onclick="executeEmployeeDeletion('${emp['工号']}')">🗑️ 物理抹除档案</button>` : ''}
+                        ${currentRole === 'Admin' ? `<button class="tech-btn" onclick="extractProfileToEditor('${emp['工号']}')">✏️ 调入控制总线</button>` : ''}
+                        <button class="tech-btn" onclick="document.getElementById('profileHoloModal').remove()">✖ 释放终端</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+    
+    function extractProfileToEditor(id) {
+        document.getElementById('profileHoloModal').remove();
+        const emp = globalEmployees.find(e => String(e['工号']) === String(id));
+        if(!emp) return;
+        
+        document.getElementById('rightPanel').classList.remove('hidden-right');
+        document.getElementById('editorPanelTitle').innerText = `⚡ 控制总线 · #${id}`;
+        
+        const mapper = {
+            "工号":"f_id", "姓名":"f_name", "性别":"f_gender", "岗位":"f_pos", "站点":"f_dept", 
+            "班次":"f_shift", "上司工号":"f_manager", "邮箱":"f_email", "入职日期":"f_hire", 
+            "出生日期":"f_dob", "国籍":"f_nation", "办公室号":"f_office", "等级":"f_level", 
+            "办公地点":"f_location", "工作TG":"f_worktg", "私人TG":"f_privtg", "备注":"f_notes"
+        };
+        
+        Object.keys(mapper).forEach(key => {
+            const dom = document.getElementById(mapper[key]);
+            if(dom) dom.value = emp[key] || '';
+        });
+    }
+
+    /* ====== 核心CRUD通讯网 ====== */
+    function triggerSaveEmployeeAction() {
+        const f_id = document.getElementById('f_id').value.trim();
+        const f_name = document.getElementById('f_name').value.trim();
+        if(!f_id || !f_name) return alert("⚠️ 控制线拦截：工号与姓名为空！");
+        
+        secureConfirm("🛡️ 异步写入确认", `您确定要将 [${f_name}] 的档案同步吗？`, async () => {
+            const empData = {
+                "工号": f_id, "姓名": f_name, "性别": document.getElementById('f_gender').value,
+                "岗位": document.getElementById('f_pos').value, "站点": document.getElementById('f_dept').value,
+                "班次": document.getElementById('f_shift').value, "上司工号": document.getElementById('f_manager').value,
+                "邮箱": document.getElementById('f_email').value, "入职日期": document.getElementById('f_hire').value,
+                "出生日期": document.getElementById('f_dob').value, "国籍": document.getElementById('f_nation').value,
+                "办公室号": document.getElementById('f_office').value, "等级": document.getElementById('f_level').value,
+                "办公地点": document.getElementById('f_location').value, "工作TG": document.getElementById('f_worktg').value,
+                "私人TG": document.getElementById('f_privtg').value, "备注": document.getElementById('f_notes').value
+            };
+
+            try {
+                const response = await fetch(SCRIPT_URL, { 
+                    method: 'POST', body: JSON.stringify({ action: 'saveEmployee', data: empData })
+                });
+                const result = await response.json();
+                if(result.status === 'success') { 
+                    alert("✅ 云端同步完成。"); 
+                    clearEditorForm();
+                    await synchronizeCoreData(); 
+                } else { alert("❌ 同步中断: " + result.msg); }
+            } catch(e) { alert("⚠️ 云端写入失败。"); }
+        });
+    }
+
+    function executeEmployeeDeletion(id) {
+        document.getElementById('profileHoloModal').remove();
+        secureConfirm("🚨 极端物理毁灭协议", `警告：擦除 [${id}] 全息档案不可逆！`, async () => {
+            try {
+                const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'deleteEmployee', id: id }) });
+                const result = await response.json();
+                if(result.status === 'success') { alert("💥 档案已擦除。"); await synchronizeCoreData(); }
+            } catch(e) { alert("⚠️ 网络总线阻塞。"); }
+        });
+    }
+
+    /* ====== 设置与个人数据 ====== */
+    function openSettingsPanel() {
+        if(!currentUserEmail) return;
+        document.getElementById('settingsOverlay').style.display = 'flex';
+        renderConfigSettingsModalUI();
+    }
+    
+    function renderConfigSettingsModalUI() {
+        const siteBox = document.getElementById('configSitesContainer');
+        siteBox.innerHTML = configSites.map((s, idx) => `
+            <span class="staff-role" style="display:inline-flex; align-items:center; gap:6px; background:rgba(0,240,255,0.15); border:1px solid var(--primary-glow);">
+                ${s} <b style="color:var(--danger-neon); cursor:pointer;" onclick="removeSiteFromConfig(${idx})">×</b>
+            </span>
+        `).join('');
+        
+        const adminBox = document.getElementById('configAdminsContainer');
+        adminBox.innerHTML = configAdmins.map((a, idx) => `
+            <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:6px; border-radius:4px;">
+                <span style="font-family:monospace;">${a}</span>
+                <span style="color:var(--danger-neon); cursor:pointer; font-weight:bold;" onclick="removeAdminFromConfig(${idx})">🚨 解除授权</span>
+            </div>
+        `).join('');
+    }
+    
+    function addNewSiteToConfig() {
+        const val = document.getElementById('newSiteInput').value.trim();
+        if(val && !configSites.includes(val)) { configSites.push(val); renderConfigSettingsModalUI(); }
+    }
+    function removeSiteFromConfig(idx) { secureConfirm("🪐 移除节点", "确认撤回节点吗？", () => { configSites.splice(idx, 1); renderConfigSettingsModalUI(); }); }
+    function addNewAdminToConfig() {
+        const val = document.getElementById('newAdminInput').value.trim();
+        if(val && !configAdmins.includes(val)) { configAdmins.push(val); renderConfigSettingsModalUI(); }
+    }
+    function removeAdminFromConfig(idx) { secureConfirm("🛡️ 剥夺特权", "确认剥夺白名单吗？", () => { configAdmins.splice(idx, 1); renderConfigSettingsModalUI(); }); }
+    
+    function triggerSaveConfigAction() {
+        secureConfirm("💾 写入配置协议", "推送到云端分布式数据库吗？", async () => {
+            try {
+                const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'saveConfig', sites: configSites, admins: configAdmins }) });
+                const result = await response.json();
+                if(result.status === 'success') { alert("✅ 全局空间已刷新。"); await synchronizeCoreData(); }
+            } catch(e) { alert("⚙️ 配置同步异常。"); }
+        });
+    }
+
+    /* ====== 头像弹窗与登出逻辑 ====== */
+    function showHDAvatar(e) {
+        e.stopPropagation(); // 阻止触发下方的打开档案事件
+        const src = document.getElementById('userAvatarIcon').src;
+        document.getElementById('hdAvatarImage').src = src;
+        document.getElementById('hdAvatarOverlay').style.display = 'flex';
+    }
+
+    function openProfileView() {
+        document.getElementById('profNickname').value = currentUserNickname;
+        document.getElementById('profPassword').value = '';
+        document.getElementById('profileOverlay').style.display = 'flex';
+    }
+    
+    async function submitProfileUpdate() {
+        const nick = document.getElementById('profNickname').value.trim();
+        const pass = document.getElementById('profPassword').value.trim();
+        const avatar = document.getElementById('profAvatar').value.trim();
+        
+        if(!nick) return alert("昵称不能为空。");
+        
+        secureConfirm("👤 身份重构协议", "确认更替您当前的个人加密数据流形态吗？", async () => {
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'updateProfile', email: currentUserEmail, nickname: nick, password: pass })
+                });
+                const result = await response.json();
+                if(result.status === 'success') {
+                    alert("✅ 特工数据重组完成。");
+                    currentUserNickname = nick;
+                    document.getElementById('userNicknameDisplay').innerText = `👋 ${currentUserNickname}`;
+                    
+                    // 更新持久化缓存里的昵称
+                    let sessionStr = localStorage.getItem('matrix_os_session');
+                    if(sessionStr) {
+                        let session = JSON.parse(sessionStr);
+                        session.nickname = nick;
+                        localStorage.setItem('matrix_os_session', JSON.stringify(session));
+                    }
+                    
+                    if(avatar) {
+                        localStorage.setItem(`matrix_avatar_${currentUserEmail}`, avatar);
+                        document.getElementById('userAvatarIcon').src = avatar;
+                    }
+                    
+                    closeOverlay('profileOverlay');
+                }
+            } catch(e) { alert("⚠️ 重构失败，中枢未能建立信道。"); }
+        });
+    }
+    
+    function logoutSession() { 
+        secureConfirm("⚡ 安全注销", "确认切断连接并清空本地密钥吗？", () => { 
+            localStorage.removeItem('matrix_os_session'); // 清除持久化缓存
+            window.location.reload(); 
+        }); 
+    }
+    
+    function clearEditorForm() { 
+        document.querySelectorAll('#editorForm input, #editorForm textarea').forEach(i=>i.value=''); 
+        document.getElementById('f_gender').value = '男'; document.getElementById('f_shift').value = '全班';
+        document.getElementById('editorPanelTitle').innerText = "⚡ 量子总线接入端";
+    }
+    function togglePanel(id) { document.getElementById(id).classList.toggle(id==='leftPanel'?'hidden-left':'hidden-right'); }
+    function closeOverlay(id) { document.getElementById(id).style.display = 'none'; }
+    document.getElementById('navAllStaffBtn').onclick = resetGlobalFilters;
+</script>
+</body>
+</html>
