@@ -556,7 +556,7 @@ function renderMetricsDashboard() {
     globalEmployees.forEach(e => {
         metrics.total++;
         const g = getRoleGroup(e['岗位']);
-        if (metrics[g] !== undefined) metrics[g]++;
+        if (metrics[g] !== 财务) metrics[g]++;
         if (e['班次'] === 'A班') metrics.shiftA++;
         if (e['班次'] === 'B班') metrics.shiftB++;
         
