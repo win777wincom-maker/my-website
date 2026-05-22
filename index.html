@@ -167,9 +167,10 @@
         /* ====== 科幻级弹窗特效系统 ====== */
         .holo-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(1, 3, 10, 0.85); backdrop-filter: blur(10px); z-index: 2000; display: none; justify-content: center; align-items: center; }
         
+        /* 弹窗极光多彩边框实线滚动包裹器 */
         .holo-scifi-wrapper {
             position: relative;
-            padding: 2px;
+            padding: 2px; /* 极光边框厚度 (实线) */
             border-radius: 14px;
             background: linear-gradient(90deg, var(--primary-glow), var(--danger-neon), var(--success-glow), var(--primary-glow));
             background-size: 300% 300%;
@@ -184,9 +185,10 @@
         
         .holo-dialog { background: var(--modal-bg); border-radius: 12px; padding: 30px; position: relative; height: 100%; width: 100%; }
         
+        /* ====== 高清大头像极光圆环包裹器 ====== */
         .hd-avatar-wrapper {
             position: relative;
-            padding: 4px;
+            padding: 4px; /* 滚动光圈厚度 */
             border-radius: 50%;
             background: linear-gradient(90deg, var(--primary-glow), var(--danger-neon), var(--success-glow), var(--primary-glow));
             background-size: 300% 300%;
@@ -201,7 +203,7 @@
             border-radius: 50%;
             object-fit: cover;
             background: var(--bg-deep);
-            border: 4px solid var(--bg-deep);
+            border: 4px solid var(--bg-deep); /* 内层实线边框隔离图像与光效 */
         }
 
         .stat-label { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 4px; }
@@ -278,14 +280,14 @@
                 <div class="setting-group">
                     <div class="section-title">🛡️ 管理特权安全协议白名单</div>
                     <div style="display:flex; gap:10px; margin-bottom:12px;">
-                        <input type="email" id="newAdminInput" class="tech-input" placeholder="注入新用户邮箱...">
-                        <select id="newAdminRole" class="tech-input" style="width:130px;">
-                            <option value="Admin">管理员</option>
-                            <option value="Viewer">阅读者</option>
+                        <input type="email" id="newAdminInput" class="tech-input" placeholder="注入新用户邮箱..." style="flex:2;">
+                        <select id="newAdminRoleInput" class="tech-input" style="flex:1;">
+                            <option value="Admin">管理员 (完全权限)</option>
+                            <option value="Viewer">阅读者 (仅限查阅)</option>
                         </select>
                         <button class="tech-btn" onclick="addNewAdminToConfig()">🔑 授权凭证</button>
                     </div>
-                    <div id="configAdminsContainer" style="display:flex; flex-direction:column; gap:6px;"></div>
+                    <div id="configAdminsContainer" style="display:flex; flex-direction:column; gap:8px;"></div>
                 </div>
             </div>
             <div style="display: flex; justify-content: space-between; margin-top: 20px; border-top: 1px dashed var(--border-aura); padding-top: 15px;">
@@ -322,7 +324,7 @@
             <span id="userNicknameDisplay" style="font-weight:bold; color:var(--primary-glow);" onclick="openProfileView()" title="点击进入全息特工档案">未连接</span>
         </div>
         
-        <span class="gear-btn" id="gearBtnConfig" onclick="openSettingsPanel()" style="display:none;">⚙️</span>
+        <span class="gear-btn" id="gearBtn" onclick="openSettingsPanel()" style="display:none;" title="管理员设置中心">⚙️</span>
     </div>
 </header>
 
@@ -387,7 +389,7 @@
 </div>
 
 <script>
-    // ⚠️ 你的后端 Apps Script 地址
+    // ⚠️ 请更换为您自己的后端 Apps Script 地址
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzgK-T0ae8cr9zjmhjegqLgTe4RlNy086tVd7iw_CdABYtXTJj7XvirvwpEtJ-XPL1O/exec";
 
     let globalEmployees = [];
@@ -415,6 +417,19 @@
     
     const REQUIRED_SITE_ORDER = ["777win", "888HOT", "bet3333", "555win", "888TO", "11UU", "BET55"];
 
+    /* ====== 权限与角色判定刷新函数 ====== */
+    function applyUserRolePrivileges() {
+        if(currentRole === 'Admin') {
+            document.getElementById('adminWriteZone').style.display = 'flex';
+            document.getElementById('readonlyMsg').style.display = 'none';
+            document.getElementById('gearBtn').style.display = 'inline-block'; // 管理员显示设置齿轮
+        } else {
+            document.getElementById('adminWriteZone').style.display = 'none';
+            document.getElementById('readonlyMsg').style.display = 'block';
+            document.getElementById('gearBtn').style.display = 'none'; // 阅读者隐藏设置齿轮
+        }
+    }
+
     /* ====== 保持登录生命周期管理 ====== */
     window.addEventListener('DOMContentLoaded', async () => {
         const sessionStr = localStorage.getItem('matrix_os_session');
@@ -423,30 +438,19 @@
                 const session = JSON.parse(sessionStr);
                 currentUserEmail = session.email;
                 currentUserNickname = session.nickname;
-                currentRole = session.role;
+                currentRole = session.role || "Viewer";
                 
                 document.getElementById('userNicknameDisplay').innerText = `👋 ${currentUserNickname}`;
                 document.getElementById('loginOverlay').style.display = 'none';
                 
-                if(currentRole === 'Admin') {
-                    document.getElementById('adminWriteZone').style.display = 'flex';
-                    document.getElementById('readonlyMsg').style.display = 'none';
-                    document.getElementById('gearBtnConfig').style.display = 'inline-block'; // 管理员显示设置齿轮
-                } else {
-                    document.getElementById('adminWriteZone').style.display = 'none';
-                    document.getElementById('readonlyMsg').style.display = 'block';
-                    document.getElementById('gearBtnConfig').style.display = 'none'; // 阅读者隐藏齿轮
-                }
-                
+                applyUserRolePrivileges();
                 loadUserPersonalization();
                 
                 const [empData, cfgData] = await preloadPromise;
                 if(empData && empData.length > 0) {
                     globalEmployees = empData;
                     configSites = cfgData.sites || [];
-                    // 兼容旧版字符串数组，统一转化为对象格式
-                    configAdmins = (cfgData.admins || []).map(a => typeof a === 'string' ? {email: a, role: 'Admin'} : a);
-                    
+                    configAdmins = cfgData.admins || [];
                     renderSiteSidebarMenu();
                     renderMetricsDashboard();
                     renderHierarchyEngine();
@@ -519,24 +523,14 @@
                 document.getElementById('userNicknameDisplay').innerText = `👋 ${currentUserNickname}`;
                 document.getElementById('loginOverlay').style.display = 'none';
                 
-                if(currentRole === 'Admin') {
-                    document.getElementById('adminWriteZone').style.display = 'flex';
-                    document.getElementById('readonlyMsg').style.display = 'none';
-                    document.getElementById('gearBtnConfig').style.display = 'inline-block';
-                } else {
-                    document.getElementById('adminWriteZone').style.display = 'none';
-                    document.getElementById('readonlyMsg').style.display = 'block';
-                    document.getElementById('gearBtnConfig').style.display = 'none';
-                }
-                
+                applyUserRolePrivileges();
                 loadUserPersonalization();
                 
                 const [empData, cfgData] = await preloadPromise;
                 if(empData && empData.length > 0) {
                     globalEmployees = empData;
                     configSites = cfgData.sites || [];
-                    configAdmins = (cfgData.admins || []).map(a => typeof a === 'string' ? {email: a, role: 'Admin'} : a);
-                    
+                    configAdmins = cfgData.admins || [];
                     renderSiteSidebarMenu();
                     renderMetricsDashboard();
                     renderHierarchyEngine();
@@ -562,7 +556,7 @@
             globalEmployees = await empRes.json();
             const configData = await cfgRes.json();
             configSites = configData.sites || [];
-            configAdmins = (configData.admins || []).map(a => typeof a === 'string' ? {email: a, role: 'Admin'} : a);
+            configAdmins = configData.admins || [];
             
             renderSiteSidebarMenu();
             renderMetricsDashboard();
@@ -730,9 +724,11 @@
             let siteB = b['站点'] || '';
             let idxA = REQUIRED_SITE_ORDER.indexOf(siteA);
             let idxB = REQUIRED_SITE_ORDER.indexOf(siteB);
+            
             if(idxA === -1) idxA = 9999;
             if(idxB === -1) idxB = 9999;
-            if(idxA !== idxB) return idxA - idxB;
+            
+            if(idxA !== idxB) { return idxA - idxB; }
             return siteA.localeCompare(siteB);
         });
         
@@ -892,19 +888,15 @@
         });
     }
 
-    /* ====== 设置与个人数据 ====== */
+    /* ====== 设置与个人数据 (权限架构更新) ====== */
     function openSettingsPanel() {
-        if(!currentUserEmail) return;
-        // 核心拦截：双重防止阅读者调用
-        if(currentRole !== 'Admin') { 
-            alert("🔒 权限不足，仅管理员可访问全息总调度。"); 
-            return; 
-        }
+        if(currentRole !== 'Admin') return; // 二次保险阻断，如果非管理员则无反应
         document.getElementById('settingsOverlay').style.display = 'flex';
         renderConfigSettingsModalUI();
     }
     
     function renderConfigSettingsModalUI() {
+        // 渲染站点
         const siteBox = document.getElementById('configSitesContainer');
         siteBox.innerHTML = configSites.map((s, idx) => `
             <span class="staff-role" style="display:inline-flex; align-items:center; gap:6px; background:rgba(0,240,255,0.15); border:1px solid var(--primary-glow);">
@@ -912,36 +904,47 @@
             </span>
         `).join('');
         
+        // 渲染白名单及其权限体系 (兼容新老格式数据结构)
         const adminBox = document.getElementById('configAdminsContainer');
-        adminBox.innerHTML = configAdmins.map((a, idx) => `
-            <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:6px; border-radius:4px;">
-                <span style="font-family:monospace;">
-                    ${a.email} 
-                    <span style="font-size:0.75rem; color:var(--text-dim); margin-left:8px;">[${a.role === 'Admin' ? '👑 管理员' : '👁️ 阅读者'}]</span>
-                </span>
-                <span style="color:var(--danger-neon); cursor:pointer; font-weight:bold;" onclick="removeAdminFromConfig(${idx})">🚨 解除授权</span>
+        adminBox.innerHTML = configAdmins.map((a, idx) => {
+            const email = typeof a === 'string' ? a : a.email;
+            const role = typeof a === 'string' ? 'Admin' : a.role; 
+            const roleName = role === 'Admin' ? '管理员' : '阅读者';
+            const roleColor = role === 'Admin' ? 'var(--danger-neon)' : 'var(--text-dim)';
+            
+            return `
+            <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:8px 12px; border-radius:4px; border-left: 3px solid ${roleColor};">
+                <div style="display:flex; align-items:center; gap: 10px;">
+                    <span style="font-family:monospace; font-size:0.95rem;">${email}</span>
+                    <span style="font-size:0.7rem; border:1px solid ${roleColor}; color:${roleColor}; padding:2px 6px; border-radius:4px; background:rgba(0,0,0,0.3);">${roleName}</span>
+                </div>
+                <span style="color:var(--danger-neon); cursor:pointer; font-weight:bold; font-size:0.85rem;" onclick="removeAdminFromConfig(${idx})">🚨 解除授权</span>
             </div>
-        `).join('');
+            `;
+        }).join('');
     }
     
     function addNewSiteToConfig() {
         const val = document.getElementById('newSiteInput').value.trim();
-        if(val && !configSites.includes(val)) { configSites.push(val); renderConfigSettingsModalUI(); document.getElementById('newSiteInput').value = ''; }
+        if(val && !configSites.includes(val)) { configSites.push(val); renderConfigSettingsModalUI(); }
     }
     function removeSiteFromConfig(idx) { secureConfirm("🪐 移除节点", "确认撤回节点吗？", () => { configSites.splice(idx, 1); renderConfigSettingsModalUI(); }); }
     
     function addNewAdminToConfig() {
         const email = document.getElementById('newAdminInput').value.trim();
-        const role = document.getElementById('newAdminRole').value;
-        if(email && !configAdmins.find(a => a.email === email)) { 
-            configAdmins.push({email: email, role: role}); 
+        const role = document.getElementById('newAdminRoleInput').value;
+        if(email) {
+            const existingIdx = configAdmins.findIndex(a => (typeof a === 'string' ? a : a.email) === email);
+            if (existingIdx >= 0) {
+                configAdmins[existingIdx] = { email: email, role: role }; // 修改已有权限
+            } else {
+                configAdmins.push({ email: email, role: role }); // 新增
+            }
             renderConfigSettingsModalUI(); 
             document.getElementById('newAdminInput').value = '';
-        } else if(email) {
-            alert("该邮箱已被授权！");
         }
     }
-    function removeAdminFromConfig(idx) { secureConfirm("🛡️ 剥夺特权", "确认剥夺此账号访问权吗？", () => { configAdmins.splice(idx, 1); renderConfigSettingsModalUI(); }); }
+    function removeAdminFromConfig(idx) { secureConfirm("🛡️ 剥夺特权", "确认从量子网络移除该白名单吗？", () => { configAdmins.splice(idx, 1); renderConfigSettingsModalUI(); }); }
     
     function triggerSaveConfigAction() {
         secureConfirm("💾 写入配置协议", "推送到云端分布式数据库吗？", async () => {
