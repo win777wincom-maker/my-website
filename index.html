@@ -50,9 +50,11 @@
         }
 
         body { background-color: var(--bg-deep); color: var(--text-bright); font-size: 14px; height: 100vh; overflow: hidden; transition: background 0.5s, color 0.5s; }
-        .aurora-field { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background: radial-gradient(circle at 15% 50%, var(--aurora-1), transparent 40%), radial-gradient(circle at 85% 30%, var(--aurora-2), transparent 40%), radial-gradient(circle at 50% 80%, var(--aurora-3), transparent 40%), radial-gradient(circle at 80% 90%, var(--aurora-4), transparent 40%), var(--bg-deep); background-size: 200% 200%; animation: aurora-flow 15s ease infinite alternate; opacity: 0.85; filter: blur(40px); }
+        
+        /* 增加 GPU 硬件加速，防止卡顿 */
+        .aurora-field { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background: radial-gradient(circle at 15% 50%, var(--aurora-1), transparent 40%), radial-gradient(circle at 85% 30%, var(--aurora-2), transparent 40%), radial-gradient(circle at 50% 80%, var(--aurora-3), transparent 40%), radial-gradient(circle at 80% 90%, var(--aurora-4), transparent 40%), var(--bg-deep); background-size: 200% 200%; animation: aurora-flow 15s ease infinite alternate; opacity: 0.85; filter: blur(40px); transform: translateZ(0); will-change: background-position; }
         @keyframes aurora-flow { 0% { background-position: 0% 0%; } 50% { background-position: 100% 100%; } 100% { background-position: 0% 50%; } }
-        .dynamic-border { border: 1px solid var(--border-aura); box-shadow: 0 0 12px rgba(0, 240, 255, 0.1); animation: borderGlowPulse 4s infinite alternate ease-in-out; }
+        .dynamic-border { border: 1px solid var(--border-aura); box-shadow: 0 0 12px rgba(0, 240, 255, 0.1); animation: borderGlowPulse 4s infinite alternate ease-in-out; will-change: border-color, box-shadow; }
         @keyframes borderGlowPulse { 0% { border-color: var(--border-aura); box-shadow: 0 0 8px rgba(0, 240, 255, 0.15); } 100% { border-color: var(--primary-glow); box-shadow: 0 0 20px var(--border-aura); } }
         ::-webkit-scrollbar { width: 6px; height: 6px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--primary-glow); border-radius: 4px; }
         
@@ -73,7 +75,7 @@
         .staff-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
         .staff-pyramid { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
         .staff-tree { padding-left: 24px; border-left: 2px dashed var(--border-aura); display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
-        .staff-card { background: var(--card-bg); border-radius: 12px; padding: 16px; cursor: pointer; transition: all 0.3s ease; width: 100%; max-width: 280px; min-width: 240px; height: 140px; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid var(--border-aura); box-sizing: border-box; overflow: hidden; }
+        .staff-card { background: var(--card-bg); border-radius: 12px; padding: 16px; cursor: pointer; transition: all 0.3s ease; width: 100%; max-width: 280px; min-width: 240px; height: 140px; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid var(--border-aura); box-sizing: border-box; overflow: hidden; transform: translateZ(0); }
         .staff-card:hover { transform: translateY(-4px); background: rgba(5, 25, 60, 0.85); }
         
         .card-site, .staff-name, .staff-role, .staff-meta { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
@@ -110,7 +112,7 @@
         .site-shifts { display: none; padding-left: 15px; margin-top: 6px; flex-direction: column; gap: 4px; }
         .site-shifts.active { display: flex; }
         .shift-btn { background: rgba(0,0,0,0.2); border: 1px dashed var(--border-aura); color: var(--text-bright); padding: 6px 12px; border-radius: 4px; cursor: pointer; text-align: left; }
-        .site-orbit-block { background: var(--card-bg); border-radius: var(--card-radius); margin-bottom: 32px; border: 1px solid var(--border-aura); backdrop-filter: blur(4px); overflow: hidden; }
+        .site-orbit-block { background: var(--card-bg); border-radius: var(--card-radius); margin-bottom: 32px; border: 1px solid var(--border-aura); backdrop-filter: blur(4px); overflow: hidden; transform: translateZ(0); }
         .site-orbit-header { font-size: 1.3rem; font-weight: bold; padding: 14px 20px; background: rgba(0,240,255,0.15); border-bottom: 2px solid var(--primary-glow); color: var(--primary-glow); letter-spacing: 2px; }
         .role-group { margin: 20px 16px; border-radius: 12px; background: rgba(0,0,0,0.2); padding: 12px; }
         .role-group-title { font-size: 1rem; font-weight: bold; margin-bottom: 16px; padding-left: 12px; border-left: 4px solid var(--success-glow); color: var(--success-glow); }
@@ -120,7 +122,7 @@
         .staff-mini-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
         .staff-mini-table th { background: var(--table-header-bg); color: var(--primary-glow); padding: 8px 6px; text-align: left; font-weight: 600; border-bottom: 1px solid var(--border-aura); }
         .staff-mini-table td { padding: 8px 6px; border-bottom: 1px dashed rgba(0,240,255,0.2); color: var(--text-bright); }
-        .staff-mini-table tr { cursor: pointer; }
+        .staff-mini-table tr { cursor: pointer; transition: background 0.2s; }
         .staff-mini-table tr:hover td { background: rgba(0,240,255,0.1); }
         .empty-hint { text-align: center; padding: 20px; color: var(--text-dim); font-style: italic; }
         .glass-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; backdrop-filter: blur(var(--glass-blur)); background: var(--bg-surface); z-index: 100; border-bottom: 2px solid var(--primary-glow);}
@@ -132,7 +134,7 @@
         .search-box { background: transparent; border: none; color: var(--text-bright); padding: 7px 8px; outline: none; width: 200px; }
         .search-select { background: rgba(0,0,0,0.5); border: 1px solid var(--border-aura); color: var(--text-bright); padding: 5px 8px; border-radius: 4px; }
         .dashboard { display: flex; height: calc(100vh - 68px); overflow: hidden; }
-        .side-panel { width: 280px; backdrop-filter: blur(10px); background: var(--bg-surface); padding: 20px 14px; overflow-y: auto; transition: all 0.3s ease; }
+        .side-panel { width: 280px; backdrop-filter: blur(10px); background: var(--bg-surface); padding: 20px 14px; overflow-y: auto; transition: all 0.3s ease; transform: translateZ(0); }
         .right-panel { width: 400px; }
         .hidden-left { transform: translateX(-100%); margin-left: -280px; }
         .hidden-right { transform: translateX(100%); margin-right: -400px; }
@@ -144,7 +146,7 @@
         .tech-btn { background: transparent; border: 1px solid var(--primary-glow); color: var(--primary-glow); padding: 10px 20px; border-radius: 6px; cursor: pointer; transition: all 0.3s; font-weight: bold; text-align: center; }
         .tech-btn:hover { background: var(--primary-glow); color: #000; box-shadow: 0 0 15px var(--primary-glow); }
         .holo-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(1, 3, 10, 0.85); backdrop-filter: blur(10px); z-index: 2000; display: none; justify-content: center; align-items: center; }
-        .holo-scifi-wrapper { position: relative; padding: 2px; border-radius: 14px; background: linear-gradient(90deg, var(--primary-glow), var(--danger-neon), var(--success-glow), var(--primary-glow)); background-size: 300% 300%; animation: scifiBorderSpin 3s linear infinite; box-shadow: 0 0 40px rgba(0, 240, 255, 0.2); max-width: 95%;}
+        .holo-scifi-wrapper { position: relative; padding: 2px; border-radius: 14px; background: linear-gradient(90deg, var(--primary-glow), var(--danger-neon), var(--success-glow), var(--primary-glow)); background-size: 300% 300%; animation: scifiBorderSpin 3s linear infinite; box-shadow: 0 0 40px rgba(0, 240, 255, 0.2); max-width: 95%; will-change: background-position; }
         @keyframes scifiBorderSpin { 0% { background-position: 0% 50%; } 100% { background-position: 150% 50%; } }
         .holo-dialog { background: var(--modal-bg); border-radius: 12px; padding: 30px; position: relative; width: 100%; }
         .hd-avatar-wrapper { padding: 4px; border-radius: 50%; background: linear-gradient(90deg, var(--primary-glow), var(--danger-neon), var(--success-glow)); background-size: 300% 300%; animation: scifiBorderSpin 3s linear infinite; display: inline-block; }
@@ -167,8 +169,7 @@
             <p style="color:var(--text-dim); font-size:0.85rem; margin-bottom:25px;">CONTROL HUB SECURE ENTRY</p>
             <div style="display:flex; flex-direction:column; gap:16px;">
                 <input type="email" id="loginEmail" class="tech-input" placeholder="输入合规白名单邮箱">
-                <input type="password" id="loginPassword" class="tech-input" placeholder="输入多维控制凭证密码">
-                <button class="tech-btn" id="verifyLoginBtn">接入全息控制中枢</button>
+                <button class="tech-btn" id="verifyLoginBtn">免密登入中枢</button>
             </div>
         </div>
     </div>
@@ -181,7 +182,6 @@
             <div style="display:flex; flex-direction:column; gap:16px;">
                 <div><label>特工全息投影 (图片链接)</label><input type="text" id="profAvatar" class="tech-input" placeholder="留空则生成几何代号"></div>
                 <div><label>控制台专属昵称</label><input type="text" id="profNickname" class="tech-input"></div>
-                <div><label>全新多维核心密码</label><input type="password" id="profPassword" class="tech-input" placeholder="留空则不更改"></div>
                 <div style="display:flex; gap:12px; margin-top:15px; justify-content: flex-end;">
                     <button class="tech-btn" onclick="submitProfileUpdate()">💾 保存特征</button>
                     <button class="tech-btn" style="border-color:var(--danger-neon); color:var(--danger-neon);" onclick="logoutSession()">⚡ 安全登出</button>
@@ -277,7 +277,7 @@
     let globalEmployees = [], configSites = [], configAdmins = [];
     let currentRole = "Viewer", currentUserEmail = "", currentUserNickname = "";
     let currentFilter = { site: null, shift: null, search: "", searchType: "nameId", statCriteria: null, tenureDays: null };
-    let currentLayout = "tableview";
+    let currentLayout = "tableview"; // 默认表格架构
     const roleOrder = ["主管","助理","助手","客服组长","客服","出款组长","出款","其他"];
     const roleMap = {"主管":"👑 主管层","助理":"📋 助理层","助手":"🛠️ 技术助手","客服组长":"🎧 客服组长","客服":"💬 客服专员","出款组长":"💰 出款总调度","出款":"💸 出款审核","其他":"🔮 边缘序列"};
     const REQUIRED_SITE_ORDER = ["777win","888HOT","bet3333","555win","888TO","11UU","BET55"];
@@ -314,7 +314,8 @@
         } else {
             const grouped = {主管:[],助理:[],助手:[],客服组长:[],客服:[],出款组长:[],出款:[],其他:[]};
             pool.forEach(e => { grouped[getRoleGroup(e['岗位'])].push(e); });
-            let dynamicClass = currentLayout === 'grid' ? "staff-grid" : (currentLayout === 'pyramid' ? "staff-pyramid" : "staff-tree");
+            // 仅保留卡片模式 (grid)
+            let dynamicClass = "staff-grid";
             let html = '';
             for(let key of roleOrder) {
                 if(grouped[key] && grouped[key].length) {
@@ -350,7 +351,16 @@
     function executeSiteFilter(site, shift) { currentFilter = { site, shift, search:"", searchType:document.getElementById('searchTypeSelect').value, statCriteria:null, tenureDays:null }; document.getElementById('searchInput').value = ""; renderHierarchyEngine(); document.getElementById('resetFilterBtn').style.display = 'inline-block'; }
     function resetGlobalFilters() { currentFilter = { site:null, shift:null, search:"", searchType:document.getElementById('searchTypeSelect').value, statCriteria:null, tenureDays:null }; document.getElementById('searchInput').value = ""; renderHierarchyEngine(); document.getElementById('resetFilterBtn').style.display = 'none'; document.querySelectorAll('.site-shifts').forEach(s=>s.classList.remove('active')); }
     function handleSearchEngine() { currentFilter.search = document.getElementById('searchInput').value.trim().toLowerCase(); currentFilter.searchType = document.getElementById('searchTypeSelect').value; currentFilter.tenureDays = null; renderHierarchyEngine(); document.getElementById('resetFilterBtn').style.display = (currentFilter.search ? 'inline-block' : 'none'); }
-    function cycleViewLayout() { const modes = ['grid','pyramid','tree','tableview']; let idx = modes.indexOf(currentLayout); currentLayout = modes[(idx+1)%modes.length]; renderHierarchyEngine(); }
+    
+    // 优化视觉切换逻辑：仅保留 tableview 和 grid
+    function cycleViewLayout() { 
+        const modes = ['tableview', 'grid']; 
+        let idx = modes.indexOf(currentLayout); 
+        if (idx === -1) idx = 0;
+        currentLayout = modes[(idx+1)%modes.length]; 
+        renderHierarchyEngine(); 
+    }
+    
     function switchThemeMode(mode) { if(mode === 'light') document.body.classList.add('theme-light'); else document.body.classList.remove('theme-light'); }
     function openSettingsPanel() { if(currentRole !== 'Admin') return; document.getElementById('settingsOverlay').style.display = 'flex'; renderConfigSettingsModalUI(); }
     function renderConfigSettingsModalUI() { document.getElementById('configSitesContainer').innerHTML = configSites.map((s,i)=>'<span style="background:rgba(0,240,255,0.15); padding:4px 8px; border-radius:20px;">'+s+' <b style="cursor:pointer;" onclick="removeSiteFromConfig('+i+')">×</b></span>').join(''); document.getElementById('configAdminsContainer').innerHTML = configAdmins.map((a,i)=>'<div style="display:flex; justify-content:space-between;"><span>'+a.email+' <span style="color:var(--success-glow);">['+(a.role==='Admin'?'管理员':'阅读者')+']</span></span><span style="color:var(--danger-neon);cursor:pointer;" onclick="removeAdminFromConfig('+i+')">移除</span></div>').join(''); }
@@ -361,7 +371,32 @@
     function triggerSaveConfigAction(){ secureConfirm("保存配置","同步站点/白名单", async()=>{ await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({action:'saveConfig',sites:configSites,admins:configAdmins})}); alert("配置已同步"); }); }
     function showHDAvatar(e){ let src=document.getElementById('userAvatarIcon').src; document.getElementById('hdAvatarImage').src=src; document.getElementById('hdAvatarOverlay').style.display='flex'; }
     function openProfileView(){ document.getElementById('profNickname').value=currentUserNickname; document.getElementById('profileOverlay').style.display='flex'; }
-    async function submitProfileUpdate(){ let nick=document.getElementById('profNickname').value.trim(); let pass=document.getElementById('profPassword').value.trim(); let avatar=document.getElementById('profAvatar').value.trim(); if(!nick) return; await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({action:'updateProfile',email:currentUserEmail,nickname:nick,password:pass})}); currentUserNickname=nick; document.getElementById('userNicknameDisplay').innerText='👋 '+currentUserNickname; if(avatar){ localStorage.setItem('matrix_avatar_'+currentUserEmail,avatar); document.getElementById('userAvatarIcon').src=avatar;} closeOverlay('profileOverlay'); }
+    
+    // 修复：更改为无需密码的资料保存，并把数据存入本地缓存，防止刷新失效
+    async function submitProfileUpdate(){ 
+        let nick=document.getElementById('profNickname').value.trim(); 
+        let avatar=document.getElementById('profAvatar').value.trim(); 
+        if(!nick) return; 
+        
+        // 通知后端更新昵称（去掉密码字段）
+        await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({action:'updateProfile',email:currentUserEmail,nickname:nick})}); 
+        
+        currentUserNickname=nick; 
+        document.getElementById('userNicknameDisplay').innerText='👋 '+currentUserNickname; 
+        
+        // 缓存到本地，解决重新加载后丢失的问题
+        localStorage.setItem('matrix_nick_'+currentUserEmail, nick);
+        let s = JSON.parse(localStorage.getItem('matrix_os_session') || '{}');
+        s.nickname = nick;
+        localStorage.setItem('matrix_os_session', JSON.stringify(s));
+
+        if(avatar){ 
+            localStorage.setItem('matrix_avatar_'+currentUserEmail,avatar); 
+            document.getElementById('userAvatarIcon').src=avatar;
+        } 
+        closeOverlay('profileOverlay'); 
+    }
+    
     function logoutSession(){ localStorage.removeItem('matrix_os_session'); window.location.reload(); }
     function clearEditorForm(){ document.querySelectorAll('#editorForm input, #editorForm textarea').forEach(i=>i.value=''); document.getElementById('f_gender').value='男'; document.getElementById('f_shift').value='全班'; document.getElementById('editorPanelTitle').innerText = "⚡ 量子总线接入端"; }
     function togglePanel(id){ document.getElementById(id).classList.toggle(id==='leftPanel'?'hidden-left':'hidden-right'); }
@@ -375,24 +410,60 @@
             let s = JSON.parse(session);
             currentUserEmail = s.email; currentUserNickname = s.nickname; currentRole = s.role;
             document.getElementById('userNicknameDisplay').innerText = '👋 '+currentUserNickname;
+            
+            // 修复：每次重新加载页面时，从本地加载对应的头像缓存
+            let savedAvatar = localStorage.getItem('matrix_avatar_' + currentUserEmail);
+            if(savedAvatar) document.getElementById('userAvatarIcon').src = savedAvatar;
+
             document.getElementById('loginOverlay').style.display = 'none';
             applyRolePermissions();
             await synchronizeCoreData();
         }
+        
+        // 修复：免密直连！直接拉取白名单比对，绕开原失效的后端验证
         document.getElementById('verifyLoginBtn').onclick = async () => {
             let email = document.getElementById('loginEmail').value.trim();
-            let pass = document.getElementById('loginPassword').value.trim();
-            let res = await fetch(SCRIPT_URL+'?action=verifyLogin&email='+encodeURIComponent(email)+'&password='+encodeURIComponent(pass));
-            let data = await res.json();
-            if(data.allowed){
-                currentUserEmail = data.email; currentUserNickname = data.nickname; currentRole = data.role;
-                localStorage.setItem('matrix_os_session', JSON.stringify({email:currentUserEmail, nickname:currentUserNickname, role:currentRole}));
-                document.getElementById('userNicknameDisplay').innerText = '👋 '+currentUserNickname;
-                document.getElementById('loginOverlay').style.display = 'none';
-                applyRolePermissions();
-                await synchronizeCoreData();
-            } else alert("接入失败");
+            if(!email) return alert("请正确输入特工邮箱");
+            
+            try {
+                // 直接拉取系统的配置文件（getConfig）
+                let res = await fetch(SCRIPT_URL+'?action=getConfig');
+                let cfg = await res.json();
+                let admins = cfg.admins || [];
+                
+                // 在前端精准核对邮箱白名单
+                let matchedAdmin = admins.find(a => {
+                    if(typeof a === 'string') return a === email;
+                    return a.email === email;
+                });
+
+                if(matchedAdmin){
+                    currentUserEmail = email; 
+                    currentRole = typeof matchedAdmin === 'string' ? 'Admin' : matchedAdmin.role;
+                    
+                    // 读取可能之前缓存过的昵称，默认叫特工
+                    let savedNick = localStorage.getItem('matrix_nick_'+email);
+                    currentUserNickname = savedNick || "特工"; 
+                    
+                    localStorage.setItem('matrix_os_session', JSON.stringify({email:currentUserEmail, nickname:currentUserNickname, role:currentRole}));
+                    document.getElementById('userNicknameDisplay').innerText = '👋 '+currentUserNickname;
+                    
+                    // 读取对应的头像
+                    let savedAvatar = localStorage.getItem('matrix_avatar_'+email);
+                    if(savedAvatar) document.getElementById('userAvatarIcon').src = savedAvatar;
+                    
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    applyRolePermissions();
+                    await synchronizeCoreData();
+                } else {
+                    alert("⚠️ 权限阻断：该邮箱未加入白名单授权池，接入失败！");
+                }
+            } catch(error) {
+                console.error(error);
+                alert("网络异常或接口无响应，暂时无法调取白名单验证系统。");
+            }
         };
+        
         document.getElementById('navAllStaffBtn').onclick = resetGlobalFilters;
         document.getElementById('searchInput').addEventListener('keyup', handleSearchEngine);
         document.getElementById('searchTypeSelect').addEventListener('change', handleSearchEngine);
